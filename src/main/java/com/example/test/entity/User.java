@@ -28,4 +28,11 @@ public class User {
 
     @CreationTimestamp
     private LocalDateTime createAccount;
+
+    // OAuth2 제공자 (naver, google 등)
+    private String provider;
+
+    // OAuth2 제공자의 고유 ID
+    private String providerId;
+
 }

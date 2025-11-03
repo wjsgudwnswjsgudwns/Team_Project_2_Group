@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -49,14 +50,30 @@ public class AuthController {
         return Map.of("token", token);
     }
 
-    // 사용자 가져오기
     @GetMapping("/me")
-    public Map<String, String> me(@RequestHeader("Authorization") String authHeader) {
-        System.out.println("로그인 사용자 정보 요청");
-        String token = authHeader.replace("Bearer ", ""); //헤더에서 토큰 정보만 추출
-        String username = jwtUtil.extractUsername(token);
+    public ResponseEntity<?> getCurrentUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        return Map.of("username", username);
+        User user = userService.getUser(username).orElse(null);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자 인증 정보가 유효하지 않습니다.");
+        }
+
+        String safeNickname = user.getNickname();
+        if (safeNickname == null || safeNickname.trim().isEmpty()) {
+            safeNickname = user.getUsername(); // 닉네임이 없으면 아이디(username)를 대신 사용
+        }
+
+        UserDto userDto = new UserDto(
+                user.getUsername(),
+                null,
+                null,
+                safeNickname, // 유효성이 보장된 닉네임(또는 username)
+                user.getEmail()
+        );
+
+        return ResponseEntity.ok(userDto);
     }
 
     // 회원 가입
