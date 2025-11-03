@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -20,4 +23,11 @@ public class User {
 
     private String password;
 
+    @Column(unique = true)
+    private String nickname;
+
+    private String email;
+
+    @CreationTimestamp
+    private LocalDateTime createAccount;
 }
