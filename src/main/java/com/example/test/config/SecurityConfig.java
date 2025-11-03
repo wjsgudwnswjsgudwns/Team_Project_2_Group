@@ -51,6 +51,7 @@ public class SecurityConfig {
                             )); //허용 ip주소
                             config.setAllowedMethods(List.of("GET","POST","PUT","DELETE"));
                             config.setAllowedHeaders(List.of("*"));
+                            config.setExposedHeaders(List.of("Authorization")); // 추가
                             return config;
                         })
                 );
