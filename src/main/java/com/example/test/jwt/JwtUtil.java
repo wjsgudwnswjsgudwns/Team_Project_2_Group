@@ -18,10 +18,11 @@ public class JwtUtil {
 	private Long expiration; //토큰의 유효시간
 	
 	//토큰 생성
-	public String generateToken(String username) {
+	public String generateToken(String username, String role) {
 		
 		return Jwts.builder()
 				.setSubject(username) //인증 받을 사용자 이름
+                .claim("role", role)
 				.setIssuedAt(new Date()) //토큰이 발급된 시간
 				.setExpiration(new Date(System.currentTimeMillis() + expiration)) //토큰 만료시간
 				.signWith(SignatureAlgorithm.HS256, secret)
@@ -37,5 +38,14 @@ public class JwtUtil {
 				.getSubject(); //사용자 이름(username) 추출
 				
 	}
+
+    // 토큰에서 역할 추출 메서드
+    public String extractRole(String token) {
+        return Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role", String.class);
+    }
 	
 }

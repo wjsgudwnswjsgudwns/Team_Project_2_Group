@@ -2,9 +2,11 @@ package com.example.test.config;
 
 import java.util.List;
 
+import com.example.test.entity.User;
 import com.example.test.jwt.JwtAuthenticationFilter;
 import com.example.test.jwt.JwtUtil;
 import com.example.test.service.NaverOAuth2UserService;
+import com.example.test.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +33,9 @@ public class SecurityConfig {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private UserService userService;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -42,6 +47,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/oauth2/**", "/login/oauth2/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
@@ -51,7 +57,8 @@ public class SecurityConfig {
                         .successHandler((request, response, authentication) -> {
                             // OAuth2 로그인 성공 시 JWT 토큰 생성
                             String username = authentication.getName();
-                            String token = jwtUtil.generateToken(username);
+                            User user = userService.getUser(username).orElseThrow();
+                            String token = jwtUtil.generateToken(username, user.getRole());
 
                             // 프론트엔드로 리다이렉트 (토큰 포함)
                             response.sendRedirect("http://localhost:3000/oauth2/redirect?token=" + token);
