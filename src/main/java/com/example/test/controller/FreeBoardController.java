@@ -78,5 +78,33 @@ public class FreeBoardController {
         String token = authHeader.replace("Bearer ", "");
         return jwtUtil.extractUsername(token);
     }
+
+    // 좋아요 토글 API (POST /api/freeboard/{id}/like)
+    @PostMapping("/{id}/like")
+    public ResponseEntity<?> toggleLike(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String token) {
+
+        String username = jwtUtil.extractUsername(token.replace("Bearer ", ""));
+        boolean isLiked = freeBoardService.toggleLike(id, username);
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "isLiked", isLiked,
+                "message", isLiked ? "좋아요를 눌렀습니다." : "좋아요를 취소했습니다."
+        ));
+    }
+
+    // 좋아요 여부 확인 API (GET /api/freeboard/{id}/like/status)
+    @GetMapping("/{id}/like/status")
+    public ResponseEntity<?> getLikeStatus(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String token) {
+
+        String username = jwtUtil.extractUsername(token.replace("Bearer ", ""));
+        boolean isLiked = freeBoardService.isLikedByUser(id, username);
+
+        return ResponseEntity.ok(Map.of("isLiked", isLiked));
+    }
     
 }
