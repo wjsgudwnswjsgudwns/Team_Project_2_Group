@@ -50,6 +50,7 @@ public class AuthController {
         return Map.of("token", token);
     }
 
+    // 사용자 정보
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -98,6 +99,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body(error);
         }
 
+        // 비밀번호 길이 확인
         if(userDto.getPassword().length() < 8 || userDto.getPassword().length() > 16) {
             Map<String, String> error = new HashMap<>();
             error.put("passwordLengthError", "비밀번호는 8자 이상 16자 이하 입니다.");
@@ -118,11 +120,19 @@ public class AuthController {
             return ResponseEntity.badRequest().body(error);
         }
 
+        // 사용자 정보 저장
         User user = new User();
         user.setUsername(userDto.getUsername());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setNickname(userDto.getNickname());
         user.setEmail(userDto.getEmail());
+
+        // 역할 부여 로직 추가
+        if ("admin1".equals(userDto.getUsername()) || "admin2".equals(userDto.getUsername())) {
+            user.setRole("ROLE_ADMIN");
+        } else {
+            user.setRole("ROLE_USER");
+        }
 
         userService.signup(user);
 

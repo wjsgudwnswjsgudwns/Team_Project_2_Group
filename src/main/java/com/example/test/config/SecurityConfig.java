@@ -55,18 +55,6 @@ public class SecurityConfig {
 
                             // 프론트엔드로 리다이렉트 (토큰 포함)
                             response.sendRedirect("http://localhost:3000/oauth2/redirect?token=" + token);
-                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                //로그인하지 않고도 JWT 존재하면 요청을 받게 하는 설정
-                .cors(cors -> cors.configurationSource(request -> {
-                            CorsConfiguration config = new CorsConfiguration();
-                            config.setAllowCredentials(true);
-                            config.setAllowedOrigins(List.of(
-                                    "http://localhost:3000"
-                            )); //허용 ip주소
-                            config.setAllowedMethods(List.of("GET","POST","PUT","DELETE"));
-                            config.setAllowedHeaders(List.of("*"));
-                            config.setExposedHeaders(List.of("Authorization")); // 추가
-                            return config;
                         })
                 )
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
