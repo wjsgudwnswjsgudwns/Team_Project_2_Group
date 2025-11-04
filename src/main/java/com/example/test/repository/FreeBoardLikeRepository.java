@@ -16,7 +16,4 @@ public interface FreeBoardLikeRepository extends JpaRepository<FreeBoardLike, Lo
 
     // 특정 사용자의 특정 게시글 좋아요 찾기
     Optional<FreeBoardLike> findByUserAndFreeBoard(User user, FreeBoard freeBoard);
-
-    // 특정 게시글의 좋아요 개수
-    long countByFreeBoard(FreeBoard freeBoard);
 }
