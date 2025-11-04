@@ -128,24 +128,13 @@ public class FreeBoardService {
 
     // 검색 기능
     public Page<FreeBoardResponseDTO> searchPosts(String searchType, String keyword, Pageable pageable) {
-        Page<FreeBoard> boards;
-
-        switch (searchType.toLowerCase()) {
-            case "title":
-                boards = freeBoardRepository.findByFTitleContaining(keyword, pageable);
-                break;
-            case "content":
-                boards = freeBoardRepository.findByFContentContaining(keyword, pageable);
-                break;
-            case "author":
-                boards = freeBoardRepository.findByUsernameLike(keyword, pageable);
-                break;
-            case "all":
-                boards = freeBoardRepository.findByKeyword(keyword, pageable);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid search type: " + searchType);
-        }
+        Page<FreeBoard> boards = switch (searchType.toLowerCase()) {
+            case "title" -> freeBoardRepository.findByFTitleContaining(keyword, pageable);
+            case "content" -> freeBoardRepository.findByFContentContaining(keyword, pageable);
+            case "author" -> freeBoardRepository.findByUsernameLike(keyword, pageable);
+            case "all" -> freeBoardRepository.findByKeyword(keyword, pageable);
+            default -> throw new IllegalArgumentException("Invalid search type: " + searchType);
+        };
 
         return boards.map(board -> {
             FreeBoardResponseDTO dto = new FreeBoardResponseDTO();
