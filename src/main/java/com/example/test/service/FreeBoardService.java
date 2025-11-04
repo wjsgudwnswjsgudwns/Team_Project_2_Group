@@ -41,8 +41,8 @@ public class FreeBoardService {
         FreeBoard board = new FreeBoard();
         board.setFTitle(dto.getFTitle());
         board.setFContent(dto.getFContent());
+        board.setFFile(dto.getFFile()); // Base64 이미지 저장
         board.setUser(user);
-        // 파일 업로드 로직 추가
 
         return freeBoardRepository.save(board);
     }
@@ -66,13 +66,14 @@ public class FreeBoardService {
         FreeBoard board = freeBoardRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        // 작성자 확인
+        //작성자 확인
         if (!board.getUser().getUsername().equals(username)) {
             throw new RuntimeException("작성자만 수정 가능합니다");
         }
 
         board.setFTitle(dto.getFTitle());
         board.setFContent(dto.getFContent());
+        board.setFFile(dto.getFFile()); // Base64 이미지 저장
         return freeBoardRepository.save(board);
     }
 
