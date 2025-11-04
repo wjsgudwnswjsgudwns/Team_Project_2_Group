@@ -1,6 +1,7 @@
 package com.example.test.service;
 
 import com.example.test.dto.FreeBoardDTO;
+import com.example.test.dto.FreeBoardResponseDTO;
 import com.example.test.entity.FreeBoard;
 import com.example.test.entity.FreeBoardLike;
 import com.example.test.entity.User;
@@ -123,5 +124,39 @@ public class FreeBoardService {
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
         return freeBoardLikeRepository.existsByUserAndFreeBoard(user, board);
+    }
+
+    // 검색 기능
+    public Page<FreeBoardResponseDTO> searchPosts(String searchType, String keyword, Pageable pageable) {
+        Page<FreeBoard> boards;
+
+        switch (searchType.toLowerCase()) {
+            case "title":
+                boards = freeBoardRepository.findByFTitleContaining(keyword, pageable);
+                break;
+            case "content":
+                boards = freeBoardRepository.findByFContentContaining(keyword, pageable);
+                break;
+            case "author":
+                boards = freeBoardRepository.findByUsernameLike(keyword, pageable);
+                break;
+            case "all":
+                boards = freeBoardRepository.findByKeyword(keyword, pageable);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid search type: " + searchType);
+        }
+
+        return boards.map(board -> {
+            FreeBoardResponseDTO dto = new FreeBoardResponseDTO();
+            dto.setId(board.getId());
+            dto.setFTitle(board.getFTitle());  // getFTitle()로 수정
+            dto.setFContent(board.getFContent());  // getFContent()로 수정
+            dto.setFView(board.getFView());  // getFView()로 수정
+            dto.setFLike(board.getFLike());  // getFLike()로 수정
+            dto.setFWriteTime(board.getFWriteTime());  // getFWriteTime()로 수정
+            dto.setUsername(board.getUser().getUsername());
+            return dto;
+        });
     }
 }
