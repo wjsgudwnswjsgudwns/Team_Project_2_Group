@@ -43,11 +43,15 @@ public class AuthController {
     public Map<String, String> login(@RequestBody Map<String, String> body) {
         String username = body.get("username");
         String password = body.get("password"); //평문->암호화
+
         System.out.println("인증시작!");
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         System.out.println("인증끝!");
-        String token = jwtUtil.generateToken(username); //토큰 생성
-        return Map.of("token", token);
+
+        User user = userService.getUser(username).orElseThrow();
+        String token = jwtUtil.generateToken(username, user.getRole()); //토큰 생성
+
+        return Map.of("token", token, "role", user.getRole());
     }
 
     // 사용자 정보

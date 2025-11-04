@@ -1,9 +1,12 @@
 package com.example.test.jwt;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -32,9 +35,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 		if (token != null && !token.isEmpty()) {
 			try {
 				String username = jwtUtil.extractUsername(token); //토큰을 사용하는 사용자 이름
-				
+                String role = jwtUtil.extractRole(token); // 역할 추출
+
+                // 권한 리스트
+                List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+                if (role != null) {
+                    authorities.add(new SimpleGrantedAuthority(role));
+                }
+
 				//토큰 인증 객체 생성
-				UsernamePasswordAuthenticationToken authenticationToken = 
+				UsernamePasswordAuthenticationToken authenticationToken =
 						new UsernamePasswordAuthenticationToken(username, null, null);
 				authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				//토큰 인증 객체에 추가로 사용자 정보를 담기 -> 클라이언트의 ip주소, 세션 id
@@ -60,6 +70,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 		
 		return null;
 	}
+
+
 
 
 
