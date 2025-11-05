@@ -53,7 +53,7 @@ public class FreeBoardController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getPost(@PathVariable Long id) {
         FreeBoard board = freeBoardService.getPost(id);
-        return ResponseEntity.ok(board);
+        return ResponseEntity.ok(FreeBoardResponseDTO.from(board)); // DTO로 변환
     }
 
     // 게시글 수정
@@ -64,7 +64,7 @@ public class FreeBoardController {
             @RequestHeader("Authorization") String authHeader) {
         String username = extractUsername(authHeader);
         FreeBoard board = freeBoardService.updatePost(id, dto, username);
-        return ResponseEntity.ok(board);
+        return ResponseEntity.ok(FreeBoardResponseDTO.from(board));
     }
 
     // 게시글 삭제

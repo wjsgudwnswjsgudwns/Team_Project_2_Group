@@ -7,6 +7,8 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -36,6 +38,6 @@ public class FreeBoard {
     private Integer fView = 0;
     private Integer fLike = 0;
 
-//    @OneToMany(mappedBy = "freeBoard", cascade = CascadeType.ALL)
-//    private List<Comment> fComments = new ArrayList<>();
+    @OneToMany(mappedBy = "freeBoard", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FreeBoardLike> likes = new ArrayList<>();
 }
