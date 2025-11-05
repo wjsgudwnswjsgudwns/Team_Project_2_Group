@@ -22,7 +22,9 @@ public class FreeBoard {
     @Column(columnDefinition = "TEXT")
     private String fContent;
 
-    private String fFile; // 파일 경로 저장
+    // Base64 이미지들을 JSON 문자열로 저장 (LONGTEXT로 변경)
+    @Column(columnDefinition = "LONGTEXT")
+    private String fFile;
 
     @CreationTimestamp
     private LocalDateTime fWriteTime;
