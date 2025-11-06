@@ -10,6 +10,10 @@ import com.example.test.repository.FreeBoardRepository;
 import com.example.test.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,18 +32,17 @@ public class FreeCommentService {
     @Autowired
     private UserRepository userRepository;
 
-    // 댓글 목록 조회 (계층 구조)
-    public List<FreeCommentDTO> getComments(Long boardId) {
+    // 댓글 목록 조회 (페이징 적용)
+    public Page<FreeCommentDTO> getComments(Long boardId, int page, int size) {
         FreeBoard board = freeBoardRepository.findById(boardId)
                 .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
 
-        List<FreeComment> topLevelComments = freeCommentRepository.findTopLevelCommentsByFreeBoard(board);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("fCommentWriteTime").ascending());
+        Page<FreeComment> topLevelComments = freeCommentRepository.findTopLevelCommentsByFreeBoard(board, pageable);
 
         String boardAuthor = board.getUser().getUsername();
 
-        return topLevelComments.stream()
-                .map(comment -> FreeCommentDTO.from(comment, boardAuthor))
-                .collect(Collectors.toList());
+        return topLevelComments.map(comment -> FreeCommentDTO.from(comment, boardAuthor));
     }
 
     // 댓글 작성

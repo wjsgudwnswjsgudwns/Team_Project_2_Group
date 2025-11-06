@@ -6,10 +6,10 @@ import com.example.test.jwt.JwtUtil;
 import com.example.test.service.FreeCommentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -22,10 +22,13 @@ public class FreeCommentController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    // 댓글 목록 조회
+    // 댓글 목록 조회 (페이징)
     @GetMapping
-    public ResponseEntity<List<FreeCommentDTO>> getComments(@PathVariable Long boardId) {
-        List<FreeCommentDTO> comments = freeCommentService.getComments(boardId);
+    public ResponseEntity<Page<FreeCommentDTO>> getComments(
+            @PathVariable Long boardId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<FreeCommentDTO> comments = freeCommentService.getComments(boardId, page, size);
         return ResponseEntity.ok(comments);
     }
 
