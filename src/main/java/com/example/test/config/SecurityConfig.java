@@ -7,9 +7,11 @@ import com.example.test.jwt.JwtAuthenticationFilter;
 import com.example.test.jwt.JwtUtil;
 import com.example.test.service.NaverOAuth2UserService;
 import com.example.test.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -50,6 +52,14 @@ public class SecurityConfig {
                         .requestMatchers("/api/ai/**").permitAll()
                         .requestMatchers("/api/image/**").permitAll()  // 이미지 검색 API
                         .requestMatchers("/api/price/**").permitAll()  // ✅ 가격 비교 API 추가
+
+                        // ⭐ 댓글 관련 경로 수정
+                        .requestMatchers(HttpMethod.GET, "/api/freeboard/**").permitAll() // 게시글/댓글 조회는 누구나
+                        .requestMatchers(HttpMethod.POST, "/api/freeboard/*/comments").authenticated() // 댓글 작성은 인증 필요
+                        .requestMatchers(HttpMethod.PUT, "/api/freeboard/*/comments/*").authenticated() // 댓글 수정
+                        .requestMatchers(HttpMethod.DELETE, "/api/freeboard/*/comments/*").authenticated() // 댓글 삭제
+                        .requestMatchers("/api/freeboard/**").authenticated() // 나머지 게시판 기능
+
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
@@ -58,14 +68,25 @@ public class SecurityConfig {
                                 .userService(naverOAuth2UserService)
                         )
                         .successHandler((request, response, authentication) -> {
-                            // OAuth2 로그인 성공 시 JWT 토큰 생성
                             String username = authentication.getName();
                             User user = userService.getUser(username).orElseThrow();
                             String token = jwtUtil.generateToken(username, user.getRole());
-
-                            // 프론트엔드로 리다이렉트 (토큰 포함)
                             response.sendRedirect("http://localhost:3000/oauth2/redirect?token=" + token);
                         })
+                )
+                // ✅ 추가: JWT 인증 실패 시 처리
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            if (request.getRequestURI().startsWith("/api/")) {
+                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                response.setContentType("application/json;charset=UTF-8");
+                                response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"JWT token expired or invalid\"}");
+                            }
+                        })
+                )
+                // ✅ 추가: 세션 사용 안 함 (JWT 사용)
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS)
                 )
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
