@@ -124,5 +124,14 @@ public class FreeBoardController {
 
         return ResponseEntity.ok(result);
     }
+
+    // 게시글 하단 목록 조회 (현재 글 기준 앞뒤 글들)
+    @GetMapping("/{id}/nearby")
+    public ResponseEntity<?> getNearbyPosts(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "5") int size) {
+        Page<FreeBoardResponseDTO> nearbyPosts = freeBoardService.getNearbyPosts(id, size);
+        return ResponseEntity.ok(nearbyPosts);
+    }
     
 }
