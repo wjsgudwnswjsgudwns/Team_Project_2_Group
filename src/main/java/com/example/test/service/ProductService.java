@@ -36,6 +36,7 @@ public class ProductService {
             product.setManufacturer(request.getManufacturer());
             product.setPrice(request.getPrice());
             product.setCategory(request.getCategory());
+            product.setImageUrl(request.getImageUrl());
 
             // 2. specs Map을 JSON 문자열로 변환하여 저장
             String specsJson = objectMapper.writeValueAsString(request.getSpecs());
@@ -72,6 +73,7 @@ public class ProductService {
             response.setManufacturer(product.getManufacturer());
             response.setPrice(product.getPrice());
             response.setCategory(product.getCategory());
+            product.setImageUrl(product.getImageUrl());
 
             // JSON 문자열을 Map으로 변환
             Map<String, Object> specs = objectMapper.readValue(

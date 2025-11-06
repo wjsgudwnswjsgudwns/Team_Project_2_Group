@@ -21,7 +21,7 @@ public class NaverOAuth2UserService extends DefaultOAuth2UserService{
     private UserRepository userRepository;
 
     @Override
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) {
+    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
         Map<String, Object> response = (Map<String, Object>) oAuth2User.getAttribute("response");
 
@@ -34,19 +34,18 @@ public class NaverOAuth2UserService extends DefaultOAuth2UserService{
         String name = (String) response.get("name");
         String nickname = (String) response.get("nickname");
 
-        System.out.println("네이버 로그인 - ID: " + providerId + ", Email: " + email);
-
-        // DB에 사용자 저장 또는 업데이트
         User user = saveOrUpdateUser(providerId, email, name, nickname);
 
         return new DefaultOAuth2User(
-                Collections.singleton(() -> "ROLE_USER"),
-                response,
-                "id"
+                Collections.singleton(() -> user.getRole()),
+                Map.of(
+                        "id", providerId,
+                        "username", user.getUsername()
+                ),
+                "username"
         );
-
-
     }
+
 
     private User saveOrUpdateUser(String providerId, String email, String name, String nickname) {
         // provider와 providerId로 사용자 찾기

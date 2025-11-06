@@ -18,4 +18,7 @@ public class ProductCreateRequestDto {
     private ProductCategory category;  // 카테고리 (CPU, MEMORY, GPU 등)
 
     private Map<String, Object> specs;
+
+    // s3 이미지
+    private String imageUrl;
 }

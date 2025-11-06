@@ -54,16 +54,6 @@ public class AiConsultController {
                     5. 만약 https://prod.danawa.com/info/?의 링크를 불러오지 못하고 https://search.danawa.com/의 링크를 불러오는 경우
                     리스트의 최상단에 있는 정보를 추천하세요.
                 
-                    **올바른 제품명 작성 예시:**
-                    ❌ 잘못된 예시: "ASUS ROG STRIX X870E"
-                    ✅ 올바른 예시: "ASUS ROG STRIX X870E-E GAMING WIFI"
-                    
-                    ❌ 잘못된 예시: "Seasonic PRIME TX-1200"
-                    ✅ 올바른 예시: "Seasonic PRIME TX-1200 80PLUS Platinum ATX 3.0"
-                    
-                    ❌ 잘못된 예시: "Lian Li O11 Dynamic"
-                    ✅ 올바른 예시: "Lian Li O11 Dynamic EVO XL (블랙)"
-                
                     **제품명 검증 필수:**
                     추천하기 전에 반드시 https://prod.danawa.com/info/로 url이 시작하는지 확인하세요.
                     다음 제품들은 예시일 뿐이며, 실제 판매 중인 최신 제품으로 교체하세요.
