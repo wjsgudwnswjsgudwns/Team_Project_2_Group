@@ -15,4 +15,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // OAuth2용 메서드 추가
     Optional<User> findByProviderAndProviderId(String provider, String providerId);
+
+    // 이메일로 찾기 메소드 -> 구글로그인때 사용
+    Optional<User> findByEmail(String email);
 }

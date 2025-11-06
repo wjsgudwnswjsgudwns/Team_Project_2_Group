@@ -27,4 +27,8 @@ public class Product {
     // 핵심: JSON으로 유연하게 저장
     @Column(columnDefinition = "JSON")
     private String specs;  // JSON 문자열로 저장
+
+    //s3 이미지
+    @Column(length = 500)
+    private String imageUrl;
 }

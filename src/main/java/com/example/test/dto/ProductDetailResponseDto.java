@@ -19,4 +19,7 @@ public class ProductDetailResponseDto {
     private ProductCategory category;  // 카테고리
 
     private Map<String, Object> specs;
+
+    // s3 이미지
+    private String imageUrl;
 }
