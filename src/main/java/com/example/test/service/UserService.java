@@ -54,5 +54,10 @@ public class UserService implements UserDetailsService  {
 
         return userRepository.save(user);
     }
+
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
 	
 }
