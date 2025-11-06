@@ -1,6 +1,7 @@
 package com.example.test.config;
 
 import java.util.List;
+
 import com.example.test.entity.User;
 import com.example.test.jwt.JwtAuthenticationFilter;
 import com.example.test.jwt.JwtUtil;
@@ -35,15 +36,40 @@ public class SecurityConfig {
     @Autowired
     private UserService userService;
 
+    // ✅ 비밀번호 암호화기 등록
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // ✅ AuthenticationManager 등록
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
+    // ✅ CORS 전체 허용 설정
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
+        config.setExposedHeaders(List.of("Authorization"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
+    }
+
+    // ✅ 보안 필터 체인
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/auth/**",
@@ -60,35 +86,18 @@ public class SecurityConfig {
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
                         .successHandler((request, response, authentication) -> {
-                            // ✅ 구글/네이버 로그인 성공 시 JWT 발급
-                            String username = authentication.getName();
-                            User user = userService.getUser(username).orElseThrow();
-                            String token = jwtUtil.generateToken(username, user.getRole());
+                            var principal = (org.springframework.security.oauth2.core.user.OAuth2User) authentication.getPrincipal();
+                            String email = (String) principal.getAttributes().get("email");
 
+                            User user = userService.getUserByEmail(email)
+                                    .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+
+                            String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
                             response.sendRedirect("http://localhost:3000/oauth2/redirect?token=" + token);
                         })
                 )
-                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
+                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
     }
 }
