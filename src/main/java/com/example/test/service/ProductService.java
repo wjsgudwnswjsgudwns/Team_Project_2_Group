@@ -73,7 +73,7 @@ public class ProductService {
             response.setManufacturer(product.getManufacturer());
             response.setPrice(product.getPrice());
             response.setCategory(product.getCategory());
-            product.setImageUrl(product.getImageUrl());
+            response.setImageUrl(product.getImageUrl());
 
             // JSON 문자열을 Map으로 변환
             Map<String, Object> specs = objectMapper.readValue(
@@ -95,5 +95,11 @@ public class ProductService {
         return products.stream()
                 .map(this::convertToResponseDto)
                 .collect(Collectors.toList());
+    }
+
+
+    // 상품 삭제
+    public void deleteProduct(Long id) {
+        productRepository.deleteById(id);
     }
 }
