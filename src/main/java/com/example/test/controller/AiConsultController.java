@@ -47,9 +47,12 @@ public class AiConsultController {
                 
                     **매우 중요한 제품명 작성 규칙:**
                     1. 제품명은 반드시 "브랜드명 + 전체 모델명 + 세부 스펙"을 모두 포함해야 합니다.
-                    2. 약칭이나 시리즈명만 쓰지 말고, 다나와에서 검색 가능한 정확한 풀네임을 사용하세요.
-                    3. 2025년에 출시되어 현재 판매 중인 제품도 선택하세요.
-                    4. 단종되었거나 품절된 제품은 절대 추천하지 마세요.
+                    2. 2025년에 출시되어 현재 판매 중인 제품도 선택하세요.
+                    3. 단종되었거나 품절된 제품은 절대 추천하지 마세요.
+                    4. 노트북의 부품, 또는 완성된 조립형 PC의 부품을 추천하지 마세요. 가장 중요한 규칙입니다.
+                    
+                    5. 만약 https://prod.danawa.com/info/?의 링크를 불러오지 못하고 https://search.danawa.com/의 링크를 불러오는 경우
+                    리스트의 최상단에 있는 정보를 추천하세요.
                 
                     **올바른 제품명 작성 예시:**
                     ❌ 잘못된 예시: "ASUS ROG STRIX X870E"
@@ -62,63 +65,10 @@ public class AiConsultController {
                     ✅ 올바른 예시: "Lian Li O11 Dynamic EVO XL (블랙)"
                 
                     **제품명 검증 필수:**
-                    추천하기 전에 반드시 https://prod.danawa.com/info/?로 url이 시작하는지 확인하세요.
+                    추천하기 전에 반드시 https://prod.danawa.com/info/로 url이 시작하는지 확인하세요.
                     다음 제품들은 예시일 뿐이며, 실제 판매 중인 최신 제품으로 교체하세요.
-                            
-                    **2024-2025년 현재 판매 중인 제품 예시:**
                     
-                    **CPU (정확한 풀네임):**
-                    - AMD Ryzen 9 9950X (16코어)
-                    - AMD Ryzen 7 9700X (8코어)
-                    - AMD Ryzen 7 7800X3D
-                    - Intel Core i9-14900K (24코어)
-                    - Intel Core i7-14700K (20코어)
-                    - Intel Core i5-14600K (14코어)
                     
-                    **GPU (정확한 풀네임):**
-                    - NVIDIA GeForce RTX 5090 D6X 32GB
-                    - NVIDIA GeForce RTX 5080 D6X 16GB
-                    - NVIDIA GeForce RTX 4070 Ti SUPER D6X 16GB
-                    - NVIDIA GeForce RTX 4060 Ti D6X 8GB
-                    - AMD Radeon RX 7900 XTX D6 24GB
-                    - AMD Radeon RX 7800 XT D6 16GB
-                    
-                    **메인보드 (정확한 풀네임):**
-                    - ASUS ROG STRIX X870E-E GAMING WIFI
-                    - MSI MAG Z790 TOMAHAWK MAX WIFI DDR5
-                    - GIGABYTE B650 AORUS ELITE AX V2
-                    - ASRock B650M PG Riptide WIFI
-                    
-                    **RAM (정확한 풀네임):**
-                    - G.SKILL Trident Z5 RGB DDR5-6000 CL30 32GB (16Gx2)
-                    - G.SKILL Trident Z5 RGB DDR5-7200 CL34 32GB (16Gx2)
-                    - CORSAIR VENGEANCE DDR5-6000 CL30 32GB (16Gx2)
-                    - TeamGroup T-Force Delta RGB DDR5-6000 CL30 32GB (16Gx2)
-                    
-                    **SSD (정확한 풀네임):**
-                    - Samsung 990 PRO M.2 NVMe 2TB
-                    - WD BLACK SN850X NVMe M.2 1TB
-                    - Crucial T700 M.2 NVMe 2TB
-                    - SK hynix Platinum P41 M.2 NVMe 2TB
-                    
-                    **파워 (정확한 풀네임):**
-                    - Seasonic VERTEX GX-850 ATX 3.0 (850W)
-                    - Corsair RM850x (2024) ATX 3.1 (850W)
-                    - MSI MAG A850GL PCIE5 ATX 3.0 (850W)
-                    - Thermaltake Toughpower GF3 850W ATX 3.0
-                    
-                    **쿨러 (정확한 풀네임):**
-                    - DeepCool AK620 ZERO DARK
-                    - Noctua NH-D15S chromax.black
-                    - be quiet! Dark Rock Pro 5
-                    - Thermalright Peerless Assassin 120 SE
-                    
-                    **케이스 (정확한 풀네임):**
-                    - Lian Li O11 Dynamic EVO XL (블랙)
-                    - Fractal Design North XL (차콜 블랙)
-                    - NZXT H9 Flow (화이트)
-                    - Corsair 5000D AIRFLOW (블랙)
-                
                     **포함할 부품 (각 1개씩):**
                     - CPU
                     - 그래픽카드
