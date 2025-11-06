@@ -1,6 +1,7 @@
 package com.example.test.dto;
 
 import com.example.test.entity.FreeComment;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,14 +13,31 @@ import java.util.stream.Collectors;
 @Data
 @NoArgsConstructor
 public class FreeCommentDTO {
+    @JsonProperty("id")
     private Long id;
+
+    @JsonProperty("fCommentContent")
     private String fCommentContent;
+
+    @JsonProperty("username")
     private String username;
+
+    @JsonProperty("parentId")
     private Long parentId;
+
+    @JsonProperty("fCommentWriteTime")
     private LocalDateTime fCommentWriteTime;
+
+    @JsonProperty("fCommentUpdateTime")
     private LocalDateTime fCommentUpdateTime;
+
+    @JsonProperty("fCommentDeleted")
     private boolean fCommentDeleted;
+
+    @JsonProperty("isAuthor")
     private boolean isAuthor; // 게시글 작성자 여부
+
+    @JsonProperty("children")
     private List<FreeCommentDTO> children = new ArrayList<>();
 
     public static FreeCommentDTO from(FreeComment comment, String boardAuthor) {
