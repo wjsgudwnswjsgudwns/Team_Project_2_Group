@@ -60,6 +60,8 @@ public class ProductController {
     public ResponseEntity<ProductDetailResponseDto> getProduct(@PathVariable Long id) {
 
         ProductDetailResponseDto response = productService.getProduct(id);
+
+        System.out.println(response);
         return ResponseEntity.ok(response);
     }
 
@@ -67,5 +69,13 @@ public class ProductController {
     public ResponseEntity<List<ProductDetailResponseDto>> getAllProducts() {
         List<ProductDetailResponseDto> products = productService.getAllProducts();
         return ResponseEntity.ok(products);
+    }
+
+    // 상품 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProdect(@PathVariable Long id) {
+        productService.deleteProduct(id);
+
+        return ResponseEntity.ok(null);
     }
 }
