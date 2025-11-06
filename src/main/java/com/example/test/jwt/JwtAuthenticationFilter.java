@@ -45,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 
 				//토큰 인증 객체 생성
 				UsernamePasswordAuthenticationToken authenticationToken =
-						new UsernamePasswordAuthenticationToken(username, null, null);
+						new UsernamePasswordAuthenticationToken(username, null, authorities);
 				authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				//토큰 인증 객체에 추가로 사용자 정보를 담기 -> 클라이언트의 ip주소, 세션 id
 				
