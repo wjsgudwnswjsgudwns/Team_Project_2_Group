@@ -150,12 +150,17 @@ public class FreeBoardService {
         });
     }
 
-    // 현재 게시글 기준 앞뒤 게시글 조회
-    public Page<FreeBoardResponseDTO> getNearbyPosts(Long currentId, int size) {
-        // 현재 게시글 기준으로 최신 글들 가져오기
-        Pageable pageable = PageRequest.of(0, size, Sort.by("fWriteTime").descending());
+//    // 현재 게시글 기준 앞뒤 게시글 조회
+//    public Page<FreeBoardResponseDTO> getNearbyPosts(Long currentId, int size) {
+//        // 현재 게시글 기준으로 최신 글들 가져오기
+//        Pageable pageable = PageRequest.of(0, size, Sort.by("fWriteTime").descending());
+//        Page<FreeBoard> posts = freeBoardRepository.findAllWithUser(pageable);
+//
+//        return posts.map(FreeBoardResponseDTO::from);
+//    }
+    public Page<FreeBoardResponseDTO> getNearbyPosts(Long currentId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("fWriteTime").descending());
         Page<FreeBoard> posts = freeBoardRepository.findAllWithUser(pageable);
-
         return posts.map(FreeBoardResponseDTO::from);
     }
 }

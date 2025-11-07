@@ -16,6 +16,10 @@ public interface FreeCommentRepository extends JpaRepository<FreeComment, Long> 
     @Query("SELECT c FROM FreeComment c WHERE c.freeBoard = :freeBoard AND c.parent IS NULL ORDER BY c.fCommentWriteTime ASC")
     Page<FreeComment> findTopLevelCommentsByFreeBoard(@Param("freeBoard") FreeBoard freeBoard, Pageable pageable);
 
-    // 특정 게시글의 모든 댓글 개수
+    // 특정 게시글의 최상위 댓글 개수만 카운트
+    @Query("SELECT COUNT(c) FROM FreeComment c WHERE c.freeBoard = :freeBoard AND c.parent IS NULL")
+    long countTopLevelCommentsByFreeBoard(@Param("freeBoard") FreeBoard freeBoard);
+
+    // 특정 게시글의 모든 댓글 개수 (대댓글 포함) - 표시용
     long countByFreeBoard(FreeBoard freeBoard);
 }

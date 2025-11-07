@@ -80,4 +80,11 @@ public class FreeCommentController {
         String token = authHeader.replace("Bearer ", "");
         return jwtUtil.extractUsername(token);
     }
+
+    // 페이징용 최상위 댓글 개수 조회
+    @GetMapping("/count/toplevel")
+    public ResponseEntity<Map<String, Long>> getTopLevelCommentCount(@PathVariable Long boardId) {
+        long count = freeCommentService.getTopLevelCommentCount(boardId);
+        return ResponseEntity.ok(Map.of("count", count));
+    }
 }
