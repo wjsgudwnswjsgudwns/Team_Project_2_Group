@@ -1,5 +1,6 @@
 package com.example.test.controller;
 
+import com.example.test.dto.PageResponseDto;
 import com.example.test.dto.ProductCreateRequestDto;
 import com.example.test.dto.ProductDetailResponseDto;
 import com.example.test.service.ProductService;
@@ -77,5 +78,28 @@ public class ProductController {
         productService.deleteProduct(id);
 
         return ResponseEntity.ok(null);
+    }
+
+    // 제품 이름으로 검색
+    @GetMapping("/search")
+    public ResponseEntity<PageResponseDto<ProductDetailResponseDto>> searchProducts(
+            @RequestParam(name = "name") String name,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "sortBy", defaultValue = "id") String sortBy) {
+
+        PageResponseDto<ProductDetailResponseDto> response = productService.searchByName(name, page, size, sortBy);
+        return ResponseEntity.ok(response);
+    }
+
+    // 전체 상품 페이지
+    @GetMapping("/paging")
+    public ResponseEntity<PageResponseDto<ProductDetailResponseDto>> getAllProductsWithPaging(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "sortBy", defaultValue = "id") String sortBy) {
+
+        PageResponseDto<ProductDetailResponseDto> response = productService.getAllProductsWithPaging(page, size, sortBy);
+        return ResponseEntity.ok(response);
     }
 }

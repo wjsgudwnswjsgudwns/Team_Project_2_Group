@@ -1,5 +1,6 @@
 package com.example.test.service;
 
+import com.example.test.dto.PageResponseDto;
 import com.example.test.dto.ProductCreateRequestDto;
 import com.example.test.dto.ProductDetailResponseDto;
 import com.example.test.entity.Product;
@@ -9,6 +10,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,6 +94,7 @@ public class ProductService {
         }
     }
 
+
     @Transactional(readOnly = true)
     public List<ProductDetailResponseDto> getAllProducts() {
         List<Product> products = productRepository.findAll();
@@ -101,5 +107,59 @@ public class ProductService {
     // 상품 삭제
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
+    }
+
+    // 제품 이름으로 검색
+    public PageResponseDto<ProductDetailResponseDto> searchByName (String name, int page, int size, String sortBy) {
+        if(name == null || name.trim().isEmpty()) {
+            return new PageResponseDto<>(List.of(), page, size, 0, 0, true, true, true);
+        }
+
+        // 최근 글로 정렬
+        Sort sort = Sort.by(Sort.Direction.DESC, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        // 페이징 시킴
+        Page<Product> productPage = productRepository.findByNameContainingIgnoreCase(name, pageable);
+
+        // JSON -> Map 변환
+        List<ProductDetailResponseDto> content = productPage.getContent().stream()
+                .map(this::convertToResponseDto)
+                .collect(Collectors.toList());
+
+        return new PageResponseDto<>(
+                content,
+                productPage.getNumber(),
+                productPage.getSize(),
+                productPage.getTotalElements(),
+                productPage.getTotalPages(),
+                productPage.isFirst(),
+                productPage.isLast(),
+                productPage.isEmpty()
+        );
+
+    }
+
+    // 전체 상품
+    public PageResponseDto<ProductDetailResponseDto> getAllProductsWithPaging(int page, int size, String sortBy) {
+        Sort sort = Sort.by(Sort.Direction.DESC, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Product> productPage = productRepository.findAll(pageable);
+
+        List<ProductDetailResponseDto> content = productPage.getContent().stream()
+                .map(this::convertToResponseDto)
+                .collect(Collectors.toList());
+
+        return new PageResponseDto<>(
+                content,
+                productPage.getNumber(),
+                productPage.getSize(),
+                productPage.getTotalElements(),
+                productPage.getTotalPages(),
+                productPage.isFirst(),
+                productPage.isLast(),
+                productPage.isEmpty()
+        );
     }
 }
