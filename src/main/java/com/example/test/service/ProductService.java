@@ -3,6 +3,7 @@ package com.example.test.service;
 import com.example.test.dto.PageResponseDto;
 import com.example.test.dto.ProductCreateRequestDto;
 import com.example.test.dto.ProductDetailResponseDto;
+import com.example.test.dto.ProductUpdateRequestDto;
 import com.example.test.entity.Product;
 import com.example.test.repository.ProductRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -58,6 +59,40 @@ public class ProductService {
         }
     }
 
+    public ProductDetailResponseDto updateProduct(Long id, ProductUpdateRequestDto request) {
+        try {
+            Product product = productRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다. ID: " + id));
+
+            // null이 아닌 필드만 업데이트
+            if (request.getName() != null) {
+                product.setName(request.getName());
+            }
+            if (request.getManufacturer() != null) {
+                product.setManufacturer(request.getManufacturer());
+            }
+            if (request.getPrice() != null) {
+                product.setPrice(request.getPrice());
+            }
+            if (request.getCategory() != null) {
+                product.setCategory(request.getCategory());
+            }
+            if (request.getImageUrl() != null) {
+                product.setImageUrl(request.getImageUrl());
+            }
+            if (request.getSpecs() != null) {
+                String specsJson = objectMapper.writeValueAsString(request.getSpecs());
+                product.setSpecs(specsJson);
+            }
+
+            Product updatedProduct = productRepository.save(product);
+            return convertToResponseDto(updatedProduct);
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("상품 수정 중 JSON 변환 오류 발생", e);
+        }
+    }
+
     // 상품 상세 조회
     @Transactional(readOnly = true)
     public ProductDetailResponseDto getProduct(Long id) {
@@ -80,10 +115,10 @@ public class ProductService {
             response.setCategory(product.getCategory());
             response.setImageUrl(product.getImageUrl());
 
-            // JSON 문자열을 Map으로 변환
-            Map<String, Object> specs = objectMapper.readValue(
+            // JSON 문자열을 List<SpecItem>으로 변환
+            List<ProductDetailResponseDto.SpecItem> specs = objectMapper.readValue(
                     product.getSpecs(),
-                    new TypeReference<Map<String, Object>>() {}
+                    new TypeReference<List<ProductDetailResponseDto.SpecItem>>() {}
             );
             response.setSpecs(specs);
 
@@ -162,4 +197,6 @@ public class ProductService {
                 productPage.isEmpty()
         );
     }
+
+
 }

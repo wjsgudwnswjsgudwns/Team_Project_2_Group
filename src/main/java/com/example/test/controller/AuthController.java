@@ -42,19 +42,19 @@ public class AuthController {
     @PostMapping("/login")
     public Map<String, String> login(@RequestBody Map<String, String> body) {
         String username = body.get("username");
-        String password = body.get("password"); //평문->암호화
+        String password = body.get("password");
 
         System.out.println("인증시작!");
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         System.out.println("인증끝!");
 
         User user = userService.getUser(username).orElseThrow();
-        String token = jwtUtil.generateToken(username, user.getRole()); //토큰 생성
+        String token = jwtUtil.generateToken(username, user.getRole());
 
         return Map.of("token", token, "role", user.getRole());
     }
 
-    // 사용자 정보
+    // 사용자 정보 - role 추가
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -67,25 +67,23 @@ public class AuthController {
 
         String safeNickname = user.getNickname();
         if (safeNickname == null || safeNickname.trim().isEmpty()) {
-            safeNickname = user.getUsername(); // 닉네임이 없으면 아이디(username)를 대신 사용
+            safeNickname = user.getUsername();
         }
 
-        UserDto userDto = new UserDto(
-                user.getUsername(),
-                null,
-                null,
-                safeNickname, // 유효성이 보장된 닉네임(또는 username)
-                user.getEmail()
-        );
+        // ✅ role 정보를 포함한 응답 반환
+        Map<String, String> response = new HashMap<>();
+        response.put("username", user.getUsername());
+        response.put("nickname", safeNickname);
+        response.put("email", user.getEmail());
+        response.put("role", user.getRole()); // 추가
 
-        return ResponseEntity.ok(userDto);
+        return ResponseEntity.ok(response);
     }
 
     // 회원 가입
     @PostMapping("/signup")
     public ResponseEntity<?> signup (@Valid @RequestBody UserDto userDto, BindingResult bindingResult) {
 
-        // Spring Validation 결과 처리
         if(bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(
@@ -96,42 +94,36 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
         }
 
-        // 비밀번호, 비밀번호 확인 일치 확인
         if(!userDto.getPassword().equals(userDto.getPasswordCheck())) {
             Map<String, String> error = new HashMap<>();
             error.put("passwordNotSame", "비밀번호와 비밀번호 확인이 일치하지 않습니다.");
             return ResponseEntity.badRequest().body(error);
         }
 
-        // 비밀번호 길이 확인
         if(userDto.getPassword().length() < 8 || userDto.getPassword().length() > 16) {
             Map<String, String> error = new HashMap<>();
             error.put("passwordLengthError", "비밀번호는 8자 이상 16자 이하 입니다.");
             return ResponseEntity.badRequest().body(error);
         }
 
-        // 아이디 중복 확인
         if(userService.isUsernameDuplicated(userDto.getUsername())) {
             Map<String, String> error = new HashMap<>();
             error.put("userIdDuplicated", "이미 사용중인 아이디입니다.");
             return ResponseEntity.badRequest().body(error);
         }
 
-        // 아이디 중복 확인
         if(userService.isNicknameDuplicated(userDto.getNickname())) {
             Map<String, String> error = new HashMap<>();
             error.put("nicknameDuplicated", "이미 사용중인 닉네임입니다.");
             return ResponseEntity.badRequest().body(error);
         }
 
-        // 사용자 정보 저장
         User user = new User();
         user.setUsername(userDto.getUsername());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setNickname(userDto.getNickname());
         user.setEmail(userDto.getEmail());
 
-        // 역할 부여 로직 추가
         if ("admin1".equals(userDto.getUsername()) || "admin2".equals(userDto.getUsername())) {
             user.setRole("ROLE_ADMIN");
         } else {
@@ -142,9 +134,4 @@ public class AuthController {
 
         return ResponseEntity.ok(user);
     }
-
-
-
-
-
 }

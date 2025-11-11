@@ -3,6 +3,7 @@ package com.example.test.controller;
 import com.example.test.dto.PageResponseDto;
 import com.example.test.dto.ProductCreateRequestDto;
 import com.example.test.dto.ProductDetailResponseDto;
+import com.example.test.dto.ProductUpdateRequestDto;
 import com.example.test.service.ProductService;
 import com.example.test.service.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -80,6 +81,16 @@ public class ProductController {
         return ResponseEntity.ok(null);
     }
 
+    // 수정
+    @PatchMapping("/{id}")
+    public ResponseEntity<ProductDetailResponseDto> updateProduct(
+            @PathVariable Long id,
+            @RequestBody ProductUpdateRequestDto request) {
+
+        ProductDetailResponseDto response = productService.updateProduct(id, request);
+        return ResponseEntity.ok(response);
+    }
+
     // 제품 이름으로 검색
     @GetMapping("/search")
     public ResponseEntity<PageResponseDto<ProductDetailResponseDto>> searchProducts(
@@ -102,4 +113,6 @@ public class ProductController {
         PageResponseDto<ProductDetailResponseDto> response = productService.getAllProductsWithPaging(page, size, sortBy);
         return ResponseEntity.ok(response);
     }
+
+
 }
