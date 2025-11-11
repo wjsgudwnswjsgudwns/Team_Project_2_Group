@@ -19,60 +19,79 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter{
-	//요청이 들어올때 마다 한번씩 실행되는 필터->요청이 들어올때 마다 JWT 검증을 수행
-	
-	@Autowired
-	private JwtUtil jwtUtil;
-	
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		 
-		String token = parseJwt(request);
-		
-		if (token != null && !token.isEmpty()) {
-			try {
-				String username = jwtUtil.extractUsername(token); //토큰을 사용하는 사용자 이름
-                String role = jwtUtil.extractRole(token); // 역할 추출
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-                // 권한 리스트
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    // ✅ SecurityConfig와 동일한 경로 설정
+    private static final List<String> EXCLUDE_URLS = List.of(
+            "/api/auth/login",
+            "/api/auth/signup",
+            "/oauth2",
+            "/login/oauth2"
+    );
+
+    // ✅ permitAll 경로 (인증 불필요)
+    private static final List<String> PERMIT_ALL_URLS = List.of(
+            "/api/ai",
+            "/api/image",
+            "/api/price",
+            "/api/products"
+    );
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+
+        // EXCLUDE_URLS: 완전히 필터를 건너뜀
+        boolean isExcluded = EXCLUDE_URLS.stream()
+                .anyMatch(uri -> requestURI.equals(uri) || requestURI.startsWith(uri + "/"));
+
+        // PERMIT_ALL_URLS: 필터를 건너뜀
+        boolean isPermitAll = PERMIT_ALL_URLS.stream()
+                .anyMatch(uri -> requestURI.startsWith(uri));
+
+        return isExcluded || isPermitAll;
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+
+        String token = parseJwt(request);
+
+        if (token != null && !token.isEmpty()) {
+            try {
+                String username = jwtUtil.extractUsername(token);
+                String role = jwtUtil.extractRole(token);
+
                 List<SimpleGrantedAuthority> authorities = new ArrayList<>();
                 if (role != null) {
                     authorities.add(new SimpleGrantedAuthority(role));
                 }
 
-				//토큰 인증 객체 생성
-				UsernamePasswordAuthenticationToken authenticationToken =
-						new UsernamePasswordAuthenticationToken(username, null, authorities);
-				authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-				//토큰 인증 객체에 추가로 사용자 정보를 담기 -> 클라이언트의 ip주소, 세션 id
-				
-				//Security에 토큰 인증 객체를 저장->스프링 시큐리티에게 인증 정보를 제공
-				SecurityContextHolder.getContext().setAuthentication(authenticationToken);				
-				
-			} catch (Exception e) {
-				System.out.println("JWT 인증 실패:" + e.getMessage());
-			}
-		}	
-		//요청->인증 정보 확인->컨트롤러 전달 or 다음 필터
-		filterChain.doFilter(request, response);
-		
-	}
-	
-	//request 객체 내의 헤더에서 token을 추출
-	private String parseJwt(HttpServletRequest request) {
-		String headerAuth = request.getHeader("Authorization");
-		if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
-			return headerAuth.substring(7);
-		}
-		
-		return null;
-	}
+                UsernamePasswordAuthenticationToken authenticationToken =
+                        new UsernamePasswordAuthenticationToken(username, null, authorities);
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
+            } catch (Exception e) {
+                System.out.println("JWT 인증 실패: " + e.getMessage());
+            }
+        }
 
+        filterChain.doFilter(request, response);
+    }
 
+    private String parseJwt(HttpServletRequest request) {
+        String headerAuth = request.getHeader("Authorization");
 
+        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+            return headerAuth.substring(7);
+        }
+
+        return null;
+    }
 }

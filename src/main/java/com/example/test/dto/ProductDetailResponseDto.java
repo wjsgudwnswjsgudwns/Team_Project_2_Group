@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -18,8 +19,16 @@ public class ProductDetailResponseDto {
     private String price;          // 가격
     private ProductCategory category;  // 카테고리
 
-    private Map<String, Object> specs;
+    private List<SpecItem> specs;
 
     // s3 이미지
     private String imageUrl;
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SpecItem {
+        private String key;    // 필드명 (예: "제조회사")
+        private String value;  // 값 (예: "Intel")
+    }
 }
