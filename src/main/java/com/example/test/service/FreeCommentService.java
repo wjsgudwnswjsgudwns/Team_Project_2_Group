@@ -16,9 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 @Transactional
 public class FreeCommentService {
@@ -43,6 +40,13 @@ public class FreeCommentService {
         String boardAuthor = board.getUser().getUsername();
 
         return topLevelComments.map(comment -> FreeCommentDTO.from(comment, boardAuthor));
+    }
+
+    // 페이징용 댓글 개수 조회 (최상위 댓글만)
+    public long getTopLevelCommentCount(Long boardId) {
+        FreeBoard board = freeBoardRepository.findById(boardId)
+                .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
+        return freeCommentRepository.countTopLevelCommentsByFreeBoard(board);
     }
 
     // 댓글 작성
@@ -106,7 +110,7 @@ public class FreeCommentService {
         }
     }
 
-    // 댓글 개수 조회
+    // 전체 댓글 개수 조회 (대댓글 포함 - 표시용)
     public long getCommentCount(Long boardId) {
         FreeBoard board = freeBoardRepository.findById(boardId)
                 .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));

@@ -1,10 +1,10 @@
 package com.example.test.controller;
 
-import com.example.test.dto.FreeBoardDTO;
-import com.example.test.dto.FreeBoardResponseDTO;
-import com.example.test.entity.FreeBoard;
+import com.example.test.dto.InfoBoardDTO;
+import com.example.test.dto.InfoBoardResponseDTO;
+import com.example.test.entity.InfoBoard;
 import com.example.test.jwt.JwtUtil;
-import com.example.test.service.FreeBoardService;
+import com.example.test.service.InfoBoardService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,63 +17,55 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/freeboard")
-public class FreeBoardController {
+@RequestMapping("/api/infoboard")
+public class InfoBoardController {
 
     @Autowired
-    private FreeBoardService freeBoardService;
+    private InfoBoardService infoBoardService;
 
     @Autowired
     private JwtUtil jwtUtil;
 
-    // 게시글 작성
     @PostMapping
     public ResponseEntity<?> createPost(
-            @Valid @RequestBody FreeBoardDTO dto,
+            @Valid @RequestBody InfoBoardDTO dto,
             @RequestHeader("Authorization") String authHeader) {
         String username = extractUsername(authHeader);
-        FreeBoard board = freeBoardService.createPost(dto, username);
-        return ResponseEntity.ok(FreeBoardResponseDTO.from(board));
+        InfoBoard board = infoBoardService.createPost(dto, username);
+        return ResponseEntity.ok(InfoBoardResponseDTO.from(board));
     }
 
-    // 게시글 목록 조회
     @GetMapping
     public ResponseEntity<?> getPostList(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<FreeBoard> posts = freeBoardService.getPostList(page, size);
-
-        // Entity -> DTO 변환
-        Page<FreeBoardResponseDTO> dtoPage = posts.map(FreeBoardResponseDTO::from);
-
+        Page<InfoBoard> posts = infoBoardService.getPostList(page, size);
+        Page<InfoBoardResponseDTO> dtoPage = posts.map(InfoBoardResponseDTO::from);
         return ResponseEntity.ok(dtoPage);
     }
 
-    // 게시글 상세 조회
     @GetMapping("/{id}")
     public ResponseEntity<?> getPost(@PathVariable Long id) {
-        FreeBoard board = freeBoardService.getPost(id);
-        return ResponseEntity.ok(FreeBoardResponseDTO.from(board)); // DTO로 변환
+        InfoBoard board = infoBoardService.getPost(id);
+        return ResponseEntity.ok(InfoBoardResponseDTO.from(board));
     }
 
-    // 게시글 수정
     @PutMapping("/{id}")
     public ResponseEntity<?> updatePost(
             @PathVariable Long id,
-            @RequestBody FreeBoardDTO dto,
+            @RequestBody InfoBoardDTO dto,
             @RequestHeader("Authorization") String authHeader) {
         String username = extractUsername(authHeader);
-        FreeBoard board = freeBoardService.updatePost(id, dto, username);
-        return ResponseEntity.ok(FreeBoardResponseDTO.from(board));
+        InfoBoard board = infoBoardService.updatePost(id, dto, username);
+        return ResponseEntity.ok(InfoBoardResponseDTO.from(board));
     }
 
-    // 게시글 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePost(
             @PathVariable Long id,
             @RequestHeader("Authorization") String authHeader) {
         String username = extractUsername(authHeader);
-        freeBoardService.deletePost(id, username);
+        infoBoardService.deletePost(id, username);
         return ResponseEntity.ok(Map.of("message", "삭제 완료"));
     }
 
@@ -82,14 +74,13 @@ public class FreeBoardController {
         return jwtUtil.extractUsername(token);
     }
 
-    // 좋아요 토글 API (POST /api/freeboard/{id}/like)
     @PostMapping("/{id}/like")
     public ResponseEntity<?> toggleLike(
             @PathVariable Long id,
             @RequestHeader("Authorization") String token) {
 
         String username = jwtUtil.extractUsername(token.replace("Bearer ", ""));
-        boolean isLiked = freeBoardService.toggleLike(id, username);
+        boolean isLiked = infoBoardService.toggleLike(id, username);
 
         return ResponseEntity.ok(Map.of(
                 "success", true,
@@ -98,47 +89,37 @@ public class FreeBoardController {
         ));
     }
 
-    // 좋아요 여부 확인 API (GET /api/freeboard/{id}/like/status)
     @GetMapping("/{id}/like/status")
     public ResponseEntity<?> getLikeStatus(
             @PathVariable Long id,
             @RequestHeader("Authorization") String token) {
 
         String username = jwtUtil.extractUsername(token.replace("Bearer ", ""));
-        boolean isLiked = freeBoardService.isLikedByUser(id, username);
+        boolean isLiked = infoBoardService.isLikedByUser(id, username);
 
         return ResponseEntity.ok(Map.of("isLiked", isLiked));
     }
 
-    // 검색 API (GET /api/freeboard/search)
     @GetMapping("/search")
-    public ResponseEntity<Page<FreeBoardResponseDTO>> searchPosts(
+    public ResponseEntity<Page<InfoBoardResponseDTO>> searchPosts(
             @RequestParam String searchType,
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestHeader("Authorization") String token) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "fWriteTime"));
-        Page<FreeBoardResponseDTO> result = freeBoardService.searchPosts(searchType, keyword, pageable);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "iWriteTime"));
+        Page<InfoBoardResponseDTO> result = infoBoardService.searchPosts(searchType, keyword, pageable);
 
         return ResponseEntity.ok(result);
     }
 
-//    // 게시글 하단 목록 조회 (현재 글 기준 앞뒤 글들)
-//    @GetMapping("/{id}/nearby")
-//    public ResponseEntity<?> getNearbyPosts(
-//            @PathVariable Long id,
-//            @RequestParam(defaultValue = "5") int size) {
-//        Page<FreeBoardResponseDTO> nearbyPosts = freeBoardService.getNearbyPosts(id, size);
-//        return ResponseEntity.ok(nearbyPosts);
-//    }
     @GetMapping("/{id}/nearby")
     public ResponseEntity<?> getNearbyPosts(
             @PathVariable Long id,
-            @RequestParam(defaultValue = "0") int page, // 🔥 page 파라미터 추가
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
-        Page<FreeBoardResponseDTO> nearbyPosts = freeBoardService.getNearbyPosts(id, page, size);
+        Page<InfoBoardResponseDTO> nearbyPosts = infoBoardService.getNearbyPosts(id, page, size);
         return ResponseEntity.ok(nearbyPosts);
     }
 }
