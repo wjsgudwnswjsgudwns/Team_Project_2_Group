@@ -78,7 +78,10 @@ public class SecurityConfig {
                                 "/api/ai/**",
                                 "/api/image/**",
                                 "/api/price/**",
-                                "/api/products/**"
+                                "/api/products/**",
+                                "/api/freeboard/**",      // 자유게시판 추가
+                                "/api/counselboard/**",   // 구매상담게시판 추가
+                                "/api/infoboard/**"       // 정보게시판 추가
                         ).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
