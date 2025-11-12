@@ -97,6 +97,7 @@ public class SecurityConfig {
                                 "/api/price/**",
                                 "/api/products/**",
                                 "/api/cart/**",
+                                "/api/chat/**",
                                 "/api/freeboard/**",      // 자유게시판 추가
                                 "/api/counselboard/**",   // 구매상담게시판 추가
                                 "/api/infoboard/**"       // 정보게시판 추가
