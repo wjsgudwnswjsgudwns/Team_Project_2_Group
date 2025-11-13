@@ -96,7 +96,6 @@ public class SecurityConfig {
                                 "/api/ai/**",
                                 "/api/image/**",
                                 "/api/price/**",
-                                "/api/chart/**",
                                 "/api/products/**",
                                 "/api/cart/**",
                                 "/api/chat/**",
