@@ -44,11 +44,11 @@ public class ProductService {
             product.setCategory(request.getCategory());
             product.setImageUrl(request.getImageUrl());
 
-            // 2. specs Map을 JSON 문자열로 변환하여 저장
+            // 2. List를 JSON 문자열로 변환하여 저장 -> 변환하지 않으면 DB에 저장이 불가
             String specsJson = objectMapper.writeValueAsString(request.getSpecs());
             product.setSpecs(specsJson);
 
-            // 3. DB에 저장
+            // 3. DB에 저장 ( savedProduct -> Product 엔티티)
             Product savedProduct = productRepository.save(product);
 
             // 4. Response DTO로 변환하여 반환
@@ -59,6 +59,7 @@ public class ProductService {
         }
     }
 
+    // 상품 수정
     public ProductDetailResponseDto updateProduct(Long id, ProductUpdateRequestDto request) {
         try {
             Product product = productRepository.findById(id)
@@ -117,8 +118,9 @@ public class ProductService {
 
             // JSON 문자열을 List<SpecItem>으로 변환
             List<ProductDetailResponseDto.SpecItem> specs = objectMapper.readValue(
-                    product.getSpecs(),
+                    product.getSpecs(), // List로 변환될 실제 원본 데이터 -> DB에 넣기 위해 String으로 변환 했었던걸 다시 java 형태로 변형
                     new TypeReference<List<ProductDetailResponseDto.SpecItem>>() {}
+                    // product.getSpecs()를 TypeReference를 이용하여 List 형태로 만들어주는데 ProductDetailResponseDto.SpecItem 이렇게 만들거다.
             );
             response.setSpecs(specs);
 
@@ -130,13 +132,13 @@ public class ProductService {
     }
 
 
-    @Transactional(readOnly = true)
-    public List<ProductDetailResponseDto> getAllProducts() {
-        List<Product> products = productRepository.findAll();
-        return products.stream()
-                .map(this::convertToResponseDto)
-                .collect(Collectors.toList());
-    }
+//    @Transactional(readOnly = true)
+//    public List<ProductDetailResponseDto> getAllProducts() {
+//        List<Product> products = productRepository.findAll();
+//        return products.stream()
+//                .map(this::convertToResponseDto)
+//                .collect(Collectors.toList());
+//    }
 
 
     // 상품 삭제
