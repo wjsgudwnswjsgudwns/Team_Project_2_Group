@@ -67,11 +67,11 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping
-    public ResponseEntity<List<ProductDetailResponseDto>> getAllProducts() {
-        List<ProductDetailResponseDto> products = productService.getAllProducts();
-        return ResponseEntity.ok(products);
-    }
+//    @GetMapping
+//    public ResponseEntity<List<ProductDetailResponseDto>> getAllProducts() {
+//        List<ProductDetailResponseDto> products = productService.getAllProducts();
+//        return ResponseEntity.ok(products);
+//    }
 
     // 상품 삭제
     @DeleteMapping("/{id}")
