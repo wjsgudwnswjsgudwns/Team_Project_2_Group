@@ -6,8 +6,10 @@ import com.example.test.entity.User;
 import com.example.test.repository.InfoBoardRepository;
 import com.example.test.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -53,8 +55,13 @@ public class NewsSchedulerService {
 
             for (NewsArticleDTO article : rssArticles) {
                 try {
-                    // ✅ 개선된 중복 검사
-                    if (isArticleAlreadyPosted(article.getLink())) {
+                    // ✅ URL 정규화
+                    String normalizedUrl = normalizeUrl(article.getLink());
+
+                    // ✅ 중복 체크
+                    if (isArticleAlreadyPosted(normalizedUrl)) {
+                        System.out.println("  ⭐️ 이미 게시됨: " + article.getTitle());
+                        skipped++;
                         continue;
                     }
 
@@ -67,9 +74,16 @@ public class NewsSchedulerService {
                             article.getImageUrl()
                     );
 
-                    createAutoPost(systemUser, article, summarized, "해외 뉴스", article.getImageUrl());
-                    totalSuccess++;
-                    rssSuccess++;
+                    // 저장
+                    try {
+                        saveNewsPost(systemUser, summarized, normalizedUrl);
+                        totalSuccess++;
+                        rssSuccess++;
+                    } catch (DataIntegrityViolationException e) {
+                        System.err.println("  ⚠️ DB 중복 제약 위반 (동시성) - 스킵");
+                        skipped++;
+                    }
+
                     Thread.sleep(2000);
 
                 } catch (Exception e) {
@@ -78,20 +92,15 @@ public class NewsSchedulerService {
             }
 
             // ==================== 2. 퀘이사존 뉴스 ====================
-            System.out.println("\n🇰🇷 퀘이사존 뉴스 수집 중...");
+            System.out.println("\n🇰🇷 [2/2] 퀘이사존 뉴스 수집 중...");
             List<NewsArticleDTO> quasarzoneArticles = quasarzoneCrawlerService.fetchLatestArticles(3);
-            System.out.println("✅ 퀘이사존 " + quasarzoneArticles.size() + "개 수집");
+            System.out.println("📰 퀘이사존 " + quasarzoneArticles.size() + "개 수집");
 
             for (NewsArticleDTO article : quasarzoneArticles) {
                 try {
-                    // ✅ 개선된 중복 검사
-                    if (isArticleAlreadyPosted(article.getLink())) {
-                        System.out.println("⏭️  이미 게시됨: " + article.getTitle());
-                        continue;
-                    }
-
                     System.out.println("📄 처리 중: " + article.getTitle());
 
+                    // ✅ Step 1: 출처 URL 추출
                     QuasarzoneCrawlerService.ArticleContentResult contentResult =
                             quasarzoneCrawlerService.fetchArticleContentWithImage(article.getLink());
 
@@ -101,6 +110,7 @@ public class NewsSchedulerService {
                         continue;
                     }
 
+                    // ✅ Step 2: 트위터/X 체크
                     if (contentResult.sourceUrl.contains("twitter.com") ||
                             contentResult.sourceUrl.contains("x.com")) {
                         System.err.println("⚠️ 트위터/X 링크는 크롤링 불가 - 스킵");
@@ -110,12 +120,16 @@ public class NewsSchedulerService {
 
                     System.out.println("🌐 출처 URL: " + contentResult.sourceUrl);
 
-                    // ✅ 출처 URL도 중복 검사
-                    if (isArticleAlreadyPosted(contentResult.sourceUrl)) {
-                        System.out.println("⏭️  출처 URL 중복: " + article.getTitle());
+                    // ✅ Step 3: URL 정규화 및 중복 체크
+                    String normalizedSourceUrl = normalizeUrl(contentResult.sourceUrl);
+
+                    if (isArticleAlreadyPosted(normalizedSourceUrl)) {
+                        System.out.println("⭐️ 이미 게시됨 (중복): " + article.getTitle());
+                        skipped++;
                         continue;
                     }
 
+                    // ✅ Step 4: 출처 본문 크롤링
                     String sourceContent = rssFeedService.fetchFullContent(contentResult.sourceUrl);
 
                     if (sourceContent.isEmpty() || sourceContent.length() < 100) {
@@ -126,6 +140,7 @@ public class NewsSchedulerService {
 
                     System.out.println("✅ 출처 본문 크롤링 완료 (길이: " + sourceContent.length() + "자)");
 
+                    // ✅ Step 5: AI 요약
                     String summarized = geminiSummarizeService.summarizeAndTranslate(
                             article.getTitle(),
                             sourceContent.substring(0, Math.min(sourceContent.length(), 2000)),
@@ -141,11 +156,17 @@ public class NewsSchedulerService {
 
                     System.out.println("✅ AI 요약 완료");
 
-                    // ✅ 출처 URL을 sourceUrl로 저장
-                    createAutoPostWithSourceUrl(systemUser, article, summarized, article.getSource(),
-                            contentResult.imageUrl, contentResult.sourceUrl);
-                    totalSuccess++;
-                    qzSuccess++;
+                    // ✅ Step 6: 저장
+                    try {
+                        saveNewsPost(systemUser, summarized, normalizedSourceUrl);
+                        totalSuccess++;
+                        qzSuccess++;
+                        System.out.println("  ✅ 저장 완료");
+                    } catch (DataIntegrityViolationException e) {
+                        System.err.println("  ⚠️ DB 중복 제약 위반 (동시성) - 스킵");
+                        skipped++;
+                    }
+
                     Thread.sleep(3000);
 
                 } catch (Exception e) {
@@ -164,18 +185,37 @@ public class NewsSchedulerService {
     }
 
     /**
-     * ✅ 개선된 중복 검사 - sourceUrl 필드 활용
+     * 통합된 저장 메서드 (모든 뉴스는 이것만 사용)
      */
-    private boolean isArticleAlreadyPosted(String link) {
-        if (link == null || link.isEmpty()) return false;
+    @Transactional
+    public void saveNewsPost(User systemUser, String summarized, String normalizedSourceUrl) {
+        // 저장 직전 한 번 더 체크 (동시성 대비)
+        if (infoBoardRepository.existsBySourceUrl(normalizedSourceUrl)) {
+            throw new DataIntegrityViolationException("Duplicate sourceUrl: " + normalizedSourceUrl);
+        }
 
-        String normalizedLink = normalizeUrl(link);
+        InfoBoard post = new InfoBoard();
+        post.setITitle(extractTitleFromContent(summarized));
+        post.setIContent(removeTitleFromContent(summarized));
+        post.setUser(systemUser);
+        post.setIFile("");
+        post.setSourceUrl(normalizedSourceUrl);  // ✅ 반드시 설정!
 
-        // ✅ DB 인덱스를 활용한 빠른 검사
-        boolean exists = infoBoardRepository.existsBySourceUrl(normalizedLink);
+        infoBoardRepository.save(post);
+
+        System.out.println("  ✔ DB 저장 완료 (sourceUrl: " + normalizedSourceUrl + ")");
+    }
+
+    /**
+     * ✅ 중복 체크
+     */
+    private boolean isArticleAlreadyPosted(String normalizedUrl) {
+        if (normalizedUrl == null || normalizedUrl.isEmpty()) return false;
+
+        boolean exists = infoBoardRepository.existsBySourceUrl(normalizedUrl);
 
         if (exists) {
-            System.out.println("  🔍 중복 감지: " + normalizedLink);
+            System.out.println("  🔍 중복 감지: " + normalizedUrl);
         }
 
         return exists;
@@ -193,54 +233,6 @@ public class NewsSchedulerService {
                 .replaceAll("/$", "")            // 끝 슬래시 제거
                 .toLowerCase()                    // 소문자 변환
                 .trim();                          // 공백 제거
-    }
-
-    /**
-     * ✅ 자동 게시글 생성 (해외 RSS용)
-     */
-    private void createAutoPost(User systemUser, NewsArticleDTO article, String content,
-                                String sourceType, String imageUrl) {
-        InfoBoard post = new InfoBoard();
-
-        String translatedTitle = extractTitleFromContent(content);
-        String contentWithoutTitle = removeTitleFromContent(content);
-
-        post.setITitle(translatedTitle);
-        post.setIContent(contentWithoutTitle);
-        post.setUser(systemUser);
-        post.setIFile("");
-
-        // ✅ sourceUrl 저장 (RSS는 article.getLink()를 사용)
-        String normalizedUrl = normalizeUrl(article.getLink());
-        post.setSourceUrl(normalizedUrl);
-
-        infoBoardRepository.save(post);
-
-        System.out.println("  ✔ 게시됨 (sourceUrl: " + normalizedUrl + ")");
-    }
-
-    /**
-     * ✅ 자동 게시글 생성 (퀘이사존용 - 출처 URL 별도 전달)
-     */
-    private void createAutoPostWithSourceUrl(User systemUser, NewsArticleDTO article, String content,
-                                             String sourceType, String imageUrl, String sourceUrl) {
-        InfoBoard post = new InfoBoard();
-
-        String translatedTitle = extractTitleFromContent(content);
-        String contentWithoutTitle = removeTitleFromContent(content);
-
-        post.setITitle(translatedTitle);
-        post.setIContent(contentWithoutTitle);
-        post.setUser(systemUser);
-        post.setIFile("");
-
-        // ✅ sourceUrl 저장 (퀘이사존은 실제 출처 URL 사용)
-        String normalizedUrl = normalizeUrl(sourceUrl);
-        post.setSourceUrl(normalizedUrl);
-
-        infoBoardRepository.save(post);
-
-        System.out.println("  ✔ 게시됨 (sourceUrl: " + normalizedUrl + ")");
     }
 
     /**
@@ -352,17 +344,18 @@ public class NewsSchedulerService {
     }
 
     /**
-     * 테스트용 즉시 실행
+     * ✅ 테스트용 즉시 실행 (중복 체크 포함)
      */
     public void runNowForTesting() {
         autoPostTechNews();
     }
 
     /**
-     * 테스트용: 중복 체크 없이 강제 실행 (소량만)
+     * ✅ 수정된 강제 실행 메서드 (중복 체크는 하되 소량만)
+     * 주의: 이 메서드도 이제 정규화된 URL로 저장합니다!
      */
     public void runNowForTestingForce() {
-        System.out.println("🔥 [강제 모드] 중복 체크 없이 뉴스 수집 시작!");
+        System.out.println("🔥 [강제 모드] 소량 뉴스 수집 시작 (중복 체크 포함)");
 
         try {
             User systemUser = getOrCreateSystemUser();
@@ -377,6 +370,16 @@ public class NewsSchedulerService {
                 try {
                     System.out.println("📄 처리: " + article.getTitle());
 
+                    // ✅ URL 정규화
+                    String normalizedUrl = normalizeUrl(article.getLink());
+
+                    // ✅ 중복 체크 (강제 모드도 체크함!)
+                    if (isArticleAlreadyPosted(normalizedUrl)) {
+                        System.out.println("  ⭐️ 이미 게시됨 - 스킵");
+                        skipped++;
+                        continue;
+                    }
+
                     String summarized = geminiSummarizeService.summarizeAndTranslate(
                             article.getTitle(),
                             article.getDescription(),
@@ -386,21 +389,19 @@ public class NewsSchedulerService {
 
                     if (!isValidSummary(summarized)) {
                         System.err.println("⚠️ AI 요약 실패 - 스킵");
+                        skipped++;
                         continue;
                     }
 
-                    // 강제 모드는 sourceUrl 저장 안함 (테스트용)
-                    InfoBoard post = new InfoBoard();
-                    String translatedTitle = extractTitleFromContent(summarized);
-                    String contentWithoutTitle = removeTitleFromContent(summarized);
-                    post.setITitle(translatedTitle);
-                    post.setIContent(contentWithoutTitle);
-                    post.setUser(systemUser);
-                    post.setIFile("");
-                    post.setSourceUrl(null);  // 강제 모드는 null
-                    infoBoardRepository.save(post);
+                    // ✅ saveNewsPost 사용 (통일!)
+                    try {
+                        saveNewsPost(systemUser, summarized, normalizedUrl);
+                        totalSuccess++;
+                    } catch (DataIntegrityViolationException e) {
+                        System.err.println("⚠️ DB 중복 제약 위반 - 스킵");
+                        skipped++;
+                    }
 
-                    totalSuccess++;
                     Thread.sleep(2000);
                 } catch (Exception e) {
                     System.err.println("❌ 처리 실패: " + e.getMessage());
@@ -420,6 +421,16 @@ public class NewsSchedulerService {
 
                     if (contentResult.sourceUrl == null || contentResult.sourceUrl.isEmpty()) {
                         System.err.println("⚠️ 출처 URL이 없어 스킵");
+                        skipped++;
+                        continue;
+                    }
+
+                    // ✅ URL 정규화
+                    String normalizedSourceUrl = normalizeUrl(contentResult.sourceUrl);
+
+                    // ✅ 중복 체크 (강제 모드도 체크함!)
+                    if (isArticleAlreadyPosted(normalizedSourceUrl)) {
+                        System.out.println("  ⭐️ 이미 게시됨 - 스킵");
                         skipped++;
                         continue;
                     }
@@ -445,18 +456,15 @@ public class NewsSchedulerService {
                         continue;
                     }
 
-                    // 강제 모드는 sourceUrl 저장 안함
-                    InfoBoard post = new InfoBoard();
-                    String translatedTitle = extractTitleFromContent(summarized);
-                    String contentWithoutTitle = removeTitleFromContent(summarized);
-                    post.setITitle(translatedTitle);
-                    post.setIContent(contentWithoutTitle);
-                    post.setUser(systemUser);
-                    post.setIFile("");
-                    post.setSourceUrl(null);  // 강제 모드는 null
-                    infoBoardRepository.save(post);
+                    // ✅ saveNewsPost 사용 (통일!)
+                    try {
+                        saveNewsPost(systemUser, summarized, normalizedSourceUrl);
+                        totalSuccess++;
+                    } catch (DataIntegrityViolationException e) {
+                        System.err.println("⚠️ DB 중복 제약 위반 - 스킵");
+                        skipped++;
+                    }
 
-                    totalSuccess++;
                     Thread.sleep(3000);
 
                 } catch (Exception e) {
