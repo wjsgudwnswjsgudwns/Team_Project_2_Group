@@ -185,7 +185,7 @@ public class NewsSchedulerService {
     }
 
     /**
-     * ✅ 통합된 저장 메서드 (모든 뉴스는 이것만 사용)
+     * 통합된 저장 메서드 (모든 뉴스는 이것만 사용)
      */
     @Transactional
     public void saveNewsPost(User systemUser, String summarized, String normalizedSourceUrl) {
