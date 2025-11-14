@@ -74,7 +74,7 @@ public class NewsSchedulerService {
                             article.getImageUrl()
                     );
 
-                    // ✅ 저장
+                    // 저장
                     try {
                         saveNewsPost(systemUser, summarized, normalizedUrl);
                         totalSuccess++;
@@ -188,7 +188,7 @@ public class NewsSchedulerService {
      * ✅ 통합된 저장 메서드 (모든 뉴스는 이것만 사용)
      */
     @Transactional
-    private void saveNewsPost(User systemUser, String summarized, String normalizedSourceUrl) {
+    public void saveNewsPost(User systemUser, String summarized, String normalizedSourceUrl) {
         // 저장 직전 한 번 더 체크 (동시성 대비)
         if (infoBoardRepository.existsBySourceUrl(normalizedSourceUrl)) {
             throw new DataIntegrityViolationException("Duplicate sourceUrl: " + normalizedSourceUrl);
