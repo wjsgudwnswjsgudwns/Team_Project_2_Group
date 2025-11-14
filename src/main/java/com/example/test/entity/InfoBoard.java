@@ -39,4 +39,7 @@ public class InfoBoard {
 
     @OneToMany(mappedBy = "infoBoard", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InfoBoardLike> likes = new ArrayList<>();
+
+    @Column(length = 1000)  // URL은 길 수 있으므로 1000자
+    private String sourceUrl;
 }

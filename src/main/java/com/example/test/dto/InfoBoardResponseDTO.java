@@ -23,9 +23,12 @@ public class InfoBoardResponseDTO {
     private Integer iView;
     private Integer iLike;
 
-    // ✅ 추가
+    // 이미지 관련
     private String firstImageUrl;
     private Integer imageCount;
+
+    // 출처 URL
+    private String sourceUrl;
 
     public static InfoBoardResponseDTO from(InfoBoard board) {
         InfoBoardResponseDTO dto = new InfoBoardResponseDTO();
@@ -37,8 +40,9 @@ public class InfoBoardResponseDTO {
         dto.setUsername(board.getUser().getUsername());
         dto.setIView(board.getIView());
         dto.setILike(board.getILike());
+        dto.setSourceUrl(board.getSourceUrl());
 
-        // ✅ 이미지 추출
+        // 이미지 추출
         extractFirstImage(dto, board.getIContent());
 
         return dto;

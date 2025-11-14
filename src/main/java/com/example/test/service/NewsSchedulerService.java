@@ -31,7 +31,6 @@ public class NewsSchedulerService {
     private UserRepository userRepository;
 
     private static final String SYSTEM_USERNAME = "NewsBot";
-    private static final int MIN_CONTENT_FOR_SUMMARY = 200; // AI 요약을 위한 최소 길이
 
     /**
      * 1시간마다 자동 실행
@@ -49,11 +48,12 @@ public class NewsSchedulerService {
 
             // ==================== 1. 해외 RSS 뉴스 ====================
             System.out.println("\n📡 [1/2] 해외 RSS 뉴스 수집 중...");
-            List<NewsArticleDTO> rssArticles = rssFeedService.fetchLatestNews(4); // 각 사이트당 4개
+            List<NewsArticleDTO> rssArticles = rssFeedService.fetchLatestNews(4);
             System.out.println("📰 해외 뉴스 " + rssArticles.size() + "개 수집됨");
 
             for (NewsArticleDTO article : rssArticles) {
                 try {
+                    // ✅ 개선된 중복 검사
                     if (isArticleAlreadyPosted(article.getLink())) {
                         continue;
                     }
@@ -77,13 +77,14 @@ public class NewsSchedulerService {
                 }
             }
 
-            // ==================== 2. 퀘이사존 뉴스 (출처 기반 AI 요약) ====================
+            // ==================== 2. 퀘이사존 뉴스 ====================
             System.out.println("\n🇰🇷 퀘이사존 뉴스 수집 중...");
-            List<NewsArticleDTO> quasarzoneArticles = quasarzoneCrawlerService.fetchLatestArticles(3); // 각 게시판당 3개
+            List<NewsArticleDTO> quasarzoneArticles = quasarzoneCrawlerService.fetchLatestArticles(3);
             System.out.println("✅ 퀘이사존 " + quasarzoneArticles.size() + "개 수집");
 
             for (NewsArticleDTO article : quasarzoneArticles) {
                 try {
+                    // ✅ 개선된 중복 검사
                     if (isArticleAlreadyPosted(article.getLink())) {
                         System.out.println("⏭️  이미 게시됨: " + article.getTitle());
                         continue;
@@ -91,26 +92,15 @@ public class NewsSchedulerService {
 
                     System.out.println("📄 처리 중: " + article.getTitle());
 
-                    // 상세 페이지에서 출처 링크와 이미지 크롤링
                     QuasarzoneCrawlerService.ArticleContentResult contentResult =
                             quasarzoneCrawlerService.fetchArticleContentWithImage(article.getLink());
 
-                    // 출처 URL 확인
                     if (contentResult.sourceUrl == null || contentResult.sourceUrl.isEmpty()) {
                         System.err.println("⚠️ 출처 URL이 없어 스킵");
                         skipped++;
                         continue;
                     }
 
-                    // 트위터/X 링크 스킵
-                    if (contentResult.sourceUrl.contains("twitter.com") ||
-                            contentResult.sourceUrl.contains("x.com")) {
-                        System.err.println("⚠️ 트위터/X 링크는 크롤링 불가 - 스킵");
-                        skipped++;
-                        continue;
-                    }
-
-                    // 트위터/X 링크는 크롤링 불가능하므로 스킵
                     if (contentResult.sourceUrl.contains("twitter.com") ||
                             contentResult.sourceUrl.contains("x.com")) {
                         System.err.println("⚠️ 트위터/X 링크는 크롤링 불가 - 스킵");
@@ -120,7 +110,12 @@ public class NewsSchedulerService {
 
                     System.out.println("🌐 출처 URL: " + contentResult.sourceUrl);
 
-                    // 출처 사이트에서 본문 크롤링
+                    // ✅ 출처 URL도 중복 검사
+                    if (isArticleAlreadyPosted(contentResult.sourceUrl)) {
+                        System.out.println("⏭️  출처 URL 중복: " + article.getTitle());
+                        continue;
+                    }
+
                     String sourceContent = rssFeedService.fetchFullContent(contentResult.sourceUrl);
 
                     if (sourceContent.isEmpty() || sourceContent.length() < 100) {
@@ -131,27 +126,27 @@ public class NewsSchedulerService {
 
                     System.out.println("✅ 출처 본문 크롤링 완료 (길이: " + sourceContent.length() + "자)");
 
-                    // Gemini로 요약 (해외 뉴스 요약 방식 사용)
                     String summarized = geminiSummarizeService.summarizeAndTranslate(
                             article.getTitle(),
-                            sourceContent.substring(0, Math.min(sourceContent.length(), 2000)), // 최대 2000자
+                            sourceContent.substring(0, Math.min(sourceContent.length(), 2000)),
                             contentResult.sourceUrl,
                             contentResult.imageUrl
                     );
 
-                    // 요약 결과 검증
                     if (!isValidSummary(summarized)) {
-                        System.err.println("⚠️ AI 요약 실패 또는 품질 불량 - 스킵");
+                        System.err.println("⚠️ AI 요약 실패 - 스킵");
                         skipped++;
                         continue;
                     }
 
                     System.out.println("✅ AI 요약 완료");
 
-                    createAutoPost(systemUser, article, summarized, article.getSource(), contentResult.imageUrl);
+                    // ✅ 출처 URL을 sourceUrl로 저장
+                    createAutoPostWithSourceUrl(systemUser, article, summarized, article.getSource(),
+                            contentResult.imageUrl, contentResult.sourceUrl);
                     totalSuccess++;
                     qzSuccess++;
-                    Thread.sleep(3000); // AI 호출이 있으므로 대기시간 증가
+                    Thread.sleep(3000);
 
                 } catch (Exception e) {
                     System.err.println("❌ 퀘이사존 기사 처리 실패: " + article.getTitle() + " - " + e.getMessage());
@@ -169,68 +164,83 @@ public class NewsSchedulerService {
     }
 
     /**
-     * 원문 그대로 포맷팅 (여러 이미지 지원)
+     * ✅ 개선된 중복 검사 - sourceUrl 필드 활용
      */
-    private String createRawContentFormat(String title, String content, String link, String source, List<String> imageUrls) {
-        StringBuilder result = new StringBuilder();
+    private boolean isArticleAlreadyPosted(String link) {
+        if (link == null || link.isEmpty()) return false;
 
-        result.append("<div><h2>").append(title).append("</h2></div>");
-        result.append("<div></div><br>");
+        String normalizedLink = normalizeUrl(link);
 
-        // 모든 이미지 추가 (최대 5개까지)
-        if (imageUrls != null && !imageUrls.isEmpty()) {
-            int imageCount = Math.min(imageUrls.size(), 5); // 최대 5개만 표시
-            System.out.println("🖼️  게시글에 " + imageCount + "개 이미지 추가");
+        // ✅ DB 인덱스를 활용한 빠른 검사
+        boolean exists = infoBoardRepository.existsBySourceUrl(normalizedLink);
 
-            for (int i = 0; i < imageCount; i++) {
-                String imageUrl = imageUrls.get(i);
-                result.append("<div><img src='").append(imageUrl)
-                        .append("' alt='기사 이미지 ").append(i + 1)
-                        .append("' style='max-width: 100%; height: auto; margin: 10px 0;'></div>");
-
-                // 이미지 사이 간격
-                if (i < imageCount - 1) {
-                    result.append("<div></div><br>");
-                }
-            }
-            result.append("<div></div><br>");
+        if (exists) {
+            System.out.println("  🔍 중복 감지: " + normalizedLink);
         }
 
-        // 본문 내용 (문단 나누기)
-        String[] paragraphs = content.split("\\n{2,}"); // 2개 이상의 개행으로 문단 구분
-
-        if (paragraphs.length > 1) {
-            for (String para : paragraphs) {
-                String trimmed = para.trim();
-                if (!trimmed.isEmpty() && trimmed.length() > 10) {
-                    result.append("<div>").append(trimmed).append("</div>");
-                    result.append("<div></div><br>");
-                }
-            }
-        } else {
-            // 문단 구분이 없으면 전체를 하나로
-            result.append("<div>").append(content).append("</div>");
-            result.append("<div></div><br>");
-        }
-
-        // 출처 정보
-        result.append("<div style='padding: 10px; background-color: rgba(255, 59, 48, 0.1); border-left: 3px solid #ff3b30;'>");
-        result.append("📌 출처: ").append(source).append("<br>");
-        result.append("🔗 원문 링크: <a href='").append(link)
-                .append("' target='_blank' style='color: #ff3b30;'>").append(link).append("</a>");
-        result.append("</div>");
-
-        return result.toString();
+        return exists;
     }
 
     /**
-     * 단일 이미지용 오버로드 메서드 (하위 호환성)
+     * ✅ URL 정규화
      */
-    private String createRawContentFormat(String title, String content, String link, String source, String imageUrl) {
-        List<String> imageUrls = imageUrl != null && !imageUrl.isEmpty()
-                ? List.of(imageUrl)
-                : List.of();
-        return createRawContentFormat(title, content, link, source, imageUrls);
+    private String normalizeUrl(String url) {
+        if (url == null || url.isEmpty()) return "";
+
+        return url
+                .replaceAll("\\?.*$", "")        // 쿼리스트링 제거
+                .replaceAll("^https?://", "")    // 프로토콜 제거
+                .replaceAll("/$", "")            // 끝 슬래시 제거
+                .toLowerCase()                    // 소문자 변환
+                .trim();                          // 공백 제거
+    }
+
+    /**
+     * ✅ 자동 게시글 생성 (해외 RSS용)
+     */
+    private void createAutoPost(User systemUser, NewsArticleDTO article, String content,
+                                String sourceType, String imageUrl) {
+        InfoBoard post = new InfoBoard();
+
+        String translatedTitle = extractTitleFromContent(content);
+        String contentWithoutTitle = removeTitleFromContent(content);
+
+        post.setITitle(translatedTitle);
+        post.setIContent(contentWithoutTitle);
+        post.setUser(systemUser);
+        post.setIFile("");
+
+        // ✅ sourceUrl 저장 (RSS는 article.getLink()를 사용)
+        String normalizedUrl = normalizeUrl(article.getLink());
+        post.setSourceUrl(normalizedUrl);
+
+        infoBoardRepository.save(post);
+
+        System.out.println("  ✔ 게시됨 (sourceUrl: " + normalizedUrl + ")");
+    }
+
+    /**
+     * ✅ 자동 게시글 생성 (퀘이사존용 - 출처 URL 별도 전달)
+     */
+    private void createAutoPostWithSourceUrl(User systemUser, NewsArticleDTO article, String content,
+                                             String sourceType, String imageUrl, String sourceUrl) {
+        InfoBoard post = new InfoBoard();
+
+        String translatedTitle = extractTitleFromContent(content);
+        String contentWithoutTitle = removeTitleFromContent(content);
+
+        post.setITitle(translatedTitle);
+        post.setIContent(contentWithoutTitle);
+        post.setUser(systemUser);
+        post.setIFile("");
+
+        // ✅ sourceUrl 저장 (퀘이사존은 실제 출처 URL 사용)
+        String normalizedUrl = normalizeUrl(sourceUrl);
+        post.setSourceUrl(normalizedUrl);
+
+        infoBoardRepository.save(post);
+
+        System.out.println("  ✔ 게시됨 (sourceUrl: " + normalizedUrl + ")");
     }
 
     /**
@@ -247,54 +257,6 @@ public class NewsSchedulerService {
                     systemUser.setRole("ROLE_SYSTEM");
                     return userRepository.save(systemUser);
                 });
-    }
-
-    /**
-     * 기사 중복 확인
-     */
-    private boolean isArticleAlreadyPosted(String link) {
-        if (link == null || link.isEmpty()) return false;
-
-        String normalizedLink = link
-                .replaceAll("\\?.*$", "")
-                .replaceAll("^https?://", "")
-                .replaceAll("/$", "");
-
-        List<InfoBoard> existingPosts = infoBoardRepository.findAll();
-        return existingPosts.stream()
-                .anyMatch(post -> {
-                    if (post.getIContent() == null) return false;
-
-                    String content = post.getIContent()
-                            .replaceAll("\\?.*$", "")
-                            .replaceAll("^https?://", "")
-                            .replaceAll("/$", "");
-
-                    return content.contains(normalizedLink);
-                });
-    }
-
-    /**
-     * 자동 게시글 생성
-     */
-    private void createAutoPost(User systemUser, NewsArticleDTO article, String content, String sourceType, String imageUrl) {
-        InfoBoard post = new InfoBoard();
-
-        String translatedTitle = extractTitleFromContent(content);
-
-        // 아이콘 제거, 제목만
-        String title = translatedTitle;
-
-        String contentWithoutTitle = removeTitleFromContent(content);
-
-        post.setITitle(title);
-        post.setIContent(contentWithoutTitle);
-        post.setUser(systemUser);
-        post.setIFile("");
-
-        infoBoardRepository.save(post);
-
-        System.out.println("  ✓ 게시됨");
     }
 
     /**
@@ -319,6 +281,9 @@ public class NewsSchedulerService {
         return "뉴스";
     }
 
+    /**
+     * 본문에서 제목 제거
+     */
     private String removeTitleFromContent(String content) {
         try {
             if (content.contains("<h2>") && content.contains("</h2>")) {
@@ -345,34 +310,28 @@ public class NewsSchedulerService {
             return false;
         }
 
-        // 최소 길이 체크 (너무 짧으면 실패)
         if (summary.length() < 100) {
             System.err.println("  ❌ 요약이 너무 짧음 (" + summary.length() + "자)");
             return false;
         }
 
-        // 제목 추출 시도
         String title = extractTitleFromContent(summary);
 
-        // 제목이 없거나 "뉴스"만 있으면 실패
         if (title.equals("뉴스") || title.isEmpty()) {
             System.err.println("  ❌ 제목 추출 실패");
             return false;
         }
 
-        // 제목이 너무 긴 경우 (80자 이상) - 잘린 제목일 가능성
         if (title.length() > 100) {
             System.err.println("  ❌ 제목이 비정상적으로 김 (" + title.length() + "자)");
             return false;
         }
 
-        // "..."로 끝나는 경우 (잘린 제목)
         if (title.endsWith("...") || title.endsWith("..")) {
             System.err.println("  ❌ 제목이 잘림: " + title);
             return false;
         }
 
-        // 에러 메시지 포함 여부
         String lowerSummary = summary.toLowerCase();
         if (lowerSummary.contains("요약할 수 없습니다") ||
                 lowerSummary.contains("실패") ||
@@ -383,7 +342,6 @@ public class NewsSchedulerService {
             return false;
         }
 
-        // TITLE: 또는 CONTENT: 태그가 없으면 잘못된 형식
         if (!summary.contains("TITLE:") && !summary.contains("<h2>")) {
             System.err.println("  ❌ 잘못된 형식 (TITLE 태그 없음)");
             return false;
@@ -401,17 +359,17 @@ public class NewsSchedulerService {
     }
 
     /**
-     * 테스트용: 중복 체크 없이 강제 실행
+     * 테스트용: 중복 체크 없이 강제 실행 (소량만)
      */
     public void runNowForTestingForce() {
-        System.out.println("🔥 [강제 모드] 중복 체크 없이 뉴스 수집 시작...");
+        System.out.println("🔥 [강제 모드] 중복 체크 없이 뉴스 수집 시작!");
 
         try {
             User systemUser = getOrCreateSystemUser();
             int totalSuccess = 0;
             int skipped = 0;
 
-            // RSS 뉴스
+            // RSS 뉴스 1개만
             List<NewsArticleDTO> rssArticles = rssFeedService.fetchLatestNews(1);
             System.out.println("📰 RSS " + rssArticles.size() + "개 수집");
 
@@ -426,13 +384,22 @@ public class NewsSchedulerService {
                             article.getImageUrl()
                     );
 
-                    // 요약 결과 검증
                     if (!isValidSummary(summarized)) {
-                        System.err.println("⚠️ AI 요약 실패 또는 품질 불량 - 스킵");
+                        System.err.println("⚠️ AI 요약 실패 - 스킵");
                         continue;
                     }
 
-                    createAutoPost(systemUser, article, summarized, "해외 뉴스", article.getImageUrl());
+                    // 강제 모드는 sourceUrl 저장 안함 (테스트용)
+                    InfoBoard post = new InfoBoard();
+                    String translatedTitle = extractTitleFromContent(summarized);
+                    String contentWithoutTitle = removeTitleFromContent(summarized);
+                    post.setITitle(translatedTitle);
+                    post.setIContent(contentWithoutTitle);
+                    post.setUser(systemUser);
+                    post.setIFile("");
+                    post.setSourceUrl(null);  // 강제 모드는 null
+                    infoBoardRepository.save(post);
+
                     totalSuccess++;
                     Thread.sleep(2000);
                 } catch (Exception e) {
@@ -440,7 +407,7 @@ public class NewsSchedulerService {
                 }
             }
 
-            // 퀘이사존 뉴스
+            // 퀘이사존 1개만
             List<NewsArticleDTO> qzArticles = quasarzoneCrawlerService.fetchLatestArticles(1);
             System.out.println("📰 퀘이사존 " + qzArticles.size() + "개 수집");
 
@@ -457,7 +424,6 @@ public class NewsSchedulerService {
                         continue;
                     }
 
-                    // 출처 사이트 크롤링
                     String sourceContent = rssFeedService.fetchFullContent(contentResult.sourceUrl);
 
                     if (sourceContent.isEmpty() || sourceContent.length() < 100) {
@@ -466,7 +432,6 @@ public class NewsSchedulerService {
                         continue;
                     }
 
-                    // Gemini 요약
                     String summarized = geminiSummarizeService.summarizeAndTranslate(
                             article.getTitle(),
                             sourceContent.substring(0, Math.min(sourceContent.length(), 2000)),
@@ -474,14 +439,23 @@ public class NewsSchedulerService {
                             contentResult.imageUrl
                     );
 
-                    // 요약 결과 검증
                     if (!isValidSummary(summarized)) {
                         System.err.println("⚠️ AI 요약 실패 - 스킵");
                         skipped++;
                         continue;
                     }
 
-                    createAutoPost(systemUser, article, summarized, article.getSource(), contentResult.imageUrl);
+                    // 강제 모드는 sourceUrl 저장 안함
+                    InfoBoard post = new InfoBoard();
+                    String translatedTitle = extractTitleFromContent(summarized);
+                    String contentWithoutTitle = removeTitleFromContent(summarized);
+                    post.setITitle(translatedTitle);
+                    post.setIContent(contentWithoutTitle);
+                    post.setUser(systemUser);
+                    post.setIFile("");
+                    post.setSourceUrl(null);  // 강제 모드는 null
+                    infoBoardRepository.save(post);
+
                     totalSuccess++;
                     Thread.sleep(3000);
 

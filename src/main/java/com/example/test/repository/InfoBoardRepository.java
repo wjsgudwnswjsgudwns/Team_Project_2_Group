@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface InfoBoardRepository extends JpaRepository<InfoBoard, Long> {
 
     @Query("SELECT i FROM InfoBoard i JOIN FETCH i.user ORDER BY i.iWriteTime DESC")
@@ -23,4 +25,8 @@ public interface InfoBoardRepository extends JpaRepository<InfoBoard, Long> {
 
     @Query("SELECT i FROM InfoBoard i WHERE i.iTitle LIKE %:keyword% OR i.iContent LIKE %:keyword% OR i.user.username LIKE %:keyword%")
     Page<InfoBoard> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+    boolean existsBySourceUrl(String sourceUrl);
+
+    Optional<InfoBoard> findBySourceUrl(String sourceUrl);
 }

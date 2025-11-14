@@ -42,6 +42,7 @@ public class InfoBoardService {
         board.setIContent(dto.getIContent());
         board.setIFile(dto.getIFile());
         board.setUser(user);
+        board.setSourceUrl(null); // 자동수집이 아닌 사용자가 직접 작성한 글은 sourceUrl null로
 
         return infoBoardRepository.save(board);
     }
@@ -135,6 +136,7 @@ public class InfoBoardService {
             dto.setILike(board.getILike());
             dto.setIWriteTime(board.getIWriteTime());
             dto.setUsername(board.getUser().getUsername());
+            dto.setSourceUrl(board.getSourceUrl());
             return dto;
         });
     }
