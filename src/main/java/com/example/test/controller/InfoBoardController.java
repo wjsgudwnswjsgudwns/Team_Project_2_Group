@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,7 +78,12 @@ public class InfoBoardController {
     @PostMapping("/{id}/like")
     public ResponseEntity<?> toggleLike(
             @PathVariable Long id,
-            @RequestHeader("Authorization") String token) {
+            @RequestHeader(value = "Authorization", required = false) String token) {
+
+        if (token == null || token.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "로그인이 필요합니다."));
+        }
 
         String username = jwtUtil.extractUsername(token.replace("Bearer ", ""));
         boolean isLiked = infoBoardService.toggleLike(id, username);
@@ -92,7 +98,11 @@ public class InfoBoardController {
     @GetMapping("/{id}/like/status")
     public ResponseEntity<?> getLikeStatus(
             @PathVariable Long id,
-            @RequestHeader("Authorization") String token) {
+            @RequestHeader(value = "Authorization", required = false) String token) {
+
+        if (token == null || token.isEmpty()) {
+            return ResponseEntity.ok(Map.of("isLiked", false));
+        }
 
         String username = jwtUtil.extractUsername(token.replace("Bearer ", ""));
         boolean isLiked = infoBoardService.isLikedByUser(id, username);
@@ -105,8 +115,7 @@ public class InfoBoardController {
             @RequestParam String searchType,
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestHeader("Authorization") String token) {
+            @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "iWriteTime"));
         Page<InfoBoardResponseDTO> result = infoBoardService.searchPosts(searchType, keyword, pageable);
