@@ -38,6 +38,8 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    //아이디 중복 확인
+
     //로그인
     @PostMapping("/login")
     public Map<String, String> login(@RequestBody Map<String, String> body) {
@@ -94,15 +96,29 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
         }
 
+        String password = userDto.getPassword();
+
+        // 영문, 숫자, 특수문자 각각 포함 여부 확인
+        boolean hasLetter = password.matches(".*[A-Za-z].*");
+        boolean hasDigit = password.matches(".*\\d.*");
+        boolean hasSpecial = password.matches(".*[^A-Za-z0-9].*");
+
+        // 조건 불충족 시 오류 반환
+        if (!(hasLetter && hasDigit && hasSpecial)) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("passwordComplexity", "비밀번호는 영문, 숫자, 특수문자를 모두 포함해야 합니다.")
+            );
+        }
+
+        if (password.length() < 8) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("passwordLengthError", "비밀번호는 8자 이상이어야 합니다.")
+            );
+        }
+
         if(!userDto.getPassword().equals(userDto.getPasswordCheck())) {
             Map<String, String> error = new HashMap<>();
             error.put("passwordNotSame", "비밀번호와 비밀번호 확인이 일치하지 않습니다.");
-            return ResponseEntity.badRequest().body(error);
-        }
-
-        if(userDto.getPassword().length() < 8 || userDto.getPassword().length() > 16) {
-            Map<String, String> error = new HashMap<>();
-            error.put("passwordLengthError", "비밀번호는 8자 이상 16자 이하 입니다.");
             return ResponseEntity.badRequest().body(error);
         }
 

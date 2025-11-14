@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -88,6 +89,12 @@ public class FreeBoardController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String token) {
 
+        // 비로그인 상태 체크
+        if (token == null || token.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "로그인이 필요합니다."));
+        }
+
         String username = jwtUtil.extractUsername(token.replace("Bearer ", ""));
         boolean isLiked = freeBoardService.toggleLike(id, username);
 
@@ -103,6 +110,11 @@ public class FreeBoardController {
     public ResponseEntity<?> getLikeStatus(
             @PathVariable Long id,
             @RequestHeader("Authorization") String token) {
+
+        // 토큰이 없으면 좋아요 안 한 것으로 처리
+        if (token == null || token.isEmpty()) {
+            return ResponseEntity.ok(Map.of("isLiked", false));
+        }
 
         String username = jwtUtil.extractUsername(token.replace("Bearer ", ""));
         boolean isLiked = freeBoardService.isLikedByUser(id, username);

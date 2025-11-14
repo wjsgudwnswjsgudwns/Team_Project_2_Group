@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -103,6 +104,13 @@ public class SecurityConfig {
                                 "/api/counselboard/**",   // 구매상담게시판 추가
                                 "/api/infoboard/**"       // 정보게시판 추가
                         ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/freeboard/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/counselboard/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/infoboard/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/freeboard/**").authenticated()
+                        .requestMatchers("/api/counselboard/**").authenticated()
+                        .requestMatchers("/api/infoboard/**").authenticated()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

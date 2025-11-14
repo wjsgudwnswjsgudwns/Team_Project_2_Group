@@ -24,7 +24,7 @@
         @Autowired
         private JwtUtil jwtUtil;
 
-        // ✅ SecurityConfig와 동일한 경로 설정
+        // SecurityConfig와 동일한 경로 설정
         private static final List<String> EXCLUDE_URLS = List.of(
                 "/api/auth/login",
                 "/api/auth/signup",
@@ -32,13 +32,17 @@
                 "/login/oauth2"
         );
 
-        // ✅ permitAll 경로 (인증 불필요)
+        // permitAll 경로 (인증 불필요)
         private static final List<String> PERMIT_ALL_URLS = List.of(
                 "/api/ai",
                 "/api/image",
                 "/api/price",
                 "/api/products",
-                "/api/chat",
+                "/api/chat"
+        );
+
+        // 게시판 GET 요청만 허용 (POST/PUT/DELETE는 인증 필요)
+        private static final List<String> BOARD_URLS = List.of(
                 "/api/freeboard",
                 "/api/counselboard",
                 "/api/infoboard"
@@ -57,6 +61,7 @@
             // PERMIT_ALL_URLS: 필터를 건너뜀
             boolean isPermitAll = PERMIT_ALL_URLS.stream()
                     .anyMatch(uri -> requestURI.startsWith(uri));
+
 
             boolean shouldSkip = isExcluded || isPermitAll;
             System.out.println("🔍 필터 건너뛰기 여부: " + shouldSkip);
