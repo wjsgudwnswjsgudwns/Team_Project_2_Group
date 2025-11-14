@@ -22,4 +22,6 @@ public interface FreeCommentRepository extends JpaRepository<FreeComment, Long> 
 
     // 특정 게시글의 모든 댓글 개수 (대댓글 포함) - 표시용
     long countByFreeBoard(FreeBoard freeBoard);
+
+    Integer countByFreeBoard_Id(Long freeBoardId);
 }

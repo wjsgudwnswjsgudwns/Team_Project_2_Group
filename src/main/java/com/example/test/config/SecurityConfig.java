@@ -90,6 +90,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/auth/login",
+                                "/api/home2",
                                 "/api/auth/signup",
                                 "/api/auth/me",
                                 "/oauth2/**",

@@ -19,4 +19,6 @@ public interface InfoCommentRepository extends JpaRepository<InfoComment, Long> 
     long countTopLevelCommentsByInfoBoard(@Param("infoBoard") InfoBoard infoBoard);
 
     long countByInfoBoard(InfoBoard infoBoard);
+
+    Integer countByInfoBoard_Id(Long infoBoardId);
 }

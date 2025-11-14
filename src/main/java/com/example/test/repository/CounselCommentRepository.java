@@ -19,4 +19,6 @@ public interface CounselCommentRepository extends JpaRepository<CounselComment, 
     long countTopLevelCommentsByCounselBoard(@Param("counselBoard") CounselBoard counselBoard);
 
     long countByCounselBoard(CounselBoard counselBoard);
+
+    Integer countByCounselBoard_Id(Long counselBoardId);
 }
