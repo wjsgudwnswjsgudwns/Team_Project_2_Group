@@ -102,7 +102,8 @@ public class SecurityConfig {
                                 "/api/chat/**",
                                 "/api/freeboard/**",      // 자유게시판 추가
                                 "/api/counselboard/**",   // 구매상담게시판 추가
-                                "/api/infoboard/**"       // 정보게시판 추가
+                                "/api/infoboard/**",      // 정보게시판 추가
+                                "/api/user/profile/**"
                         ).permitAll()
                         // 게시판 GET 요청만 허용 (비로그인 조회 가능)
                         .requestMatchers(HttpMethod.GET, "/api/freeboard/**").permitAll()

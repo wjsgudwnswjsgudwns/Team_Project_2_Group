@@ -14,6 +14,9 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@Table(name = "info_board", indexes = {
+        @Index(name = "idx_source_url_unique", columnList = "sourceUrl", unique = true)  // ✅ 추가됨
+})
 public class InfoBoard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,6 +43,6 @@ public class InfoBoard {
     @OneToMany(mappedBy = "infoBoard", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InfoBoardLike> likes = new ArrayList<>();
 
-    @Column(length = 1000)  // URL은 길 수 있으므로 1000자
+    @Column(length = 1000, unique = true)  // URL은 길 수 있으므로 1000자
     private String sourceUrl;
 }
