@@ -72,12 +72,17 @@ public class AuthController {
             safeNickname = user.getUsername();
         }
 
+        boolean hasPassword = user.getPassword() != null && !user.getPassword().trim().isEmpty();
+
+
         // ✅ role 정보를 포함한 응답 반환
         Map<String, String> response = new HashMap<>();
         response.put("username", user.getUsername());
         response.put("nickname", safeNickname);
         response.put("email", user.getEmail());
         response.put("role", user.getRole()); // 추가
+        response.put("hasPassword", String.valueOf(hasPassword));
+
 
         return ResponseEntity.ok(response);
     }
@@ -149,5 +154,44 @@ public class AuthController {
         userService.signup(user);
 
         return ResponseEntity.ok(user);
+    }
+
+    @PostMapping("/set-password")
+    public ResponseEntity<?> setPassword(@RequestBody Map<String, String> body) {
+        String password = body.get("password");
+        String passwordCheck = body.get("passwordCheck");
+
+        // 현재 로그인한 사용자 정보 가져오기
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userService.getUser(username).orElseThrow();
+
+        // 비밀번호 유효성 검사
+        boolean hasLetter = password.matches(".*[A-Za-z].*");
+        boolean hasDigit = password.matches(".*\\d.*");
+        boolean hasSpecial = password.matches(".*[^A-Za-z0-9].*");
+
+        if (!(hasLetter && hasDigit && hasSpecial)) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("passwordComplexity", "비밀번호는 영문, 숫자, 특수문자를 모두 포함해야 합니다.")
+            );
+        }
+
+        if (password.length() < 8) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("passwordLengthError", "비밀번호는 8자 이상이어야 합니다.")
+            );
+        }
+
+        if (!password.equals(passwordCheck)) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("passwordNotSame", "비밀번호와 비밀번호 확인이 일치하지 않습니다.")
+            );
+        }
+
+        // 비밀번호 설정
+        user.setPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
+
+        return ResponseEntity.ok(Map.of("message", "비밀번호가 설정되었습니다."));
     }
 }

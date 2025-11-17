@@ -90,7 +90,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/auth/login",
-                                "/api/home2",
                                 "/api/auth/signup",
                                 "/api/auth/me",
                                 "/oauth2/**",
@@ -104,7 +103,8 @@ public class SecurityConfig {
                                 "/api/freeboard/**",      // 자유게시판 추가
                                 "/api/counselboard/**",   // 구매상담게시판 추가
                                 "/api/infoboard/**",      // 정보게시판 추가
-                                "/api/user/profile/**"
+                                "/api/user/profile/**",
+                                "/api/home2/recent"
                         ).permitAll()
                         // 게시판 GET 요청만 허용 (비로그인 조회 가능)
                         .requestMatchers(HttpMethod.GET, "/api/freeboard/**").permitAll()
@@ -152,6 +152,9 @@ public class SecurityConfig {
                                     // JWT 생성
                                     String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
                                     System.out.println("✅ JWT 생성 완료: " + token.substring(0, 20) + "...");
+
+                                    // 비밀번호가 null이면 신규 유저로 판단
+                                    boolean isNewUser = (user.getPassword() == null);
 
                                     response.sendRedirect("http://localhost:3000/oauth2/redirect?token=" + token);
                                     return;

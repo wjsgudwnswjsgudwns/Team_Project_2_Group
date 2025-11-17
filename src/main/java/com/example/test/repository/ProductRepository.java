@@ -19,4 +19,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     // 이름 부분 검색 (대소문자 검색)
     Page<Product> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
+    // 카테고리별 페이징 조회 추가
+    Page<Product> findByCategory(ProductCategory category, Pageable pageable);
+
+    // 카테고리별 이름 검색 추가
+    Page<Product> findByCategoryAndNameContainingIgnoreCase(
+            ProductCategory category,
+            String name,
+            Pageable pageable
+    );
 }
