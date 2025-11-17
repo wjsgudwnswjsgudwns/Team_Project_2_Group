@@ -4,6 +4,7 @@ import com.example.test.dto.PageResponseDto;
 import com.example.test.dto.ProductCreateRequestDto;
 import com.example.test.dto.ProductDetailResponseDto;
 import com.example.test.dto.ProductUpdateRequestDto;
+import com.example.test.entity.ProductCategory;
 import com.example.test.service.ProductService;
 import com.example.test.service.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -111,6 +112,33 @@ public class ProductController {
             @RequestParam(name = "sortBy", defaultValue = "id") String sortBy) {
 
         PageResponseDto<ProductDetailResponseDto> response = productService.getAllProductsWithPaging(page, size, sortBy);
+        return ResponseEntity.ok(response);
+    }
+
+    // 카테고리별 조회
+    @GetMapping("/category/{category}")
+    public ResponseEntity<PageResponseDto<ProductDetailResponseDto>> getProductsByCategory(
+            @PathVariable ProductCategory category,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "sortBy", defaultValue = "id") String sortBy) {
+
+        PageResponseDto<ProductDetailResponseDto> response =
+                productService.getProductsByCategory(category, page, size, sortBy);
+        return ResponseEntity.ok(response);
+    }
+
+    // 카테고리별 검색
+    @GetMapping("/category/{category}/search")
+    public ResponseEntity<PageResponseDto<ProductDetailResponseDto>> searchByCategoryAndName(
+            @PathVariable ProductCategory category,
+            @RequestParam(name = "name") String name,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "sortBy", defaultValue = "id") String sortBy) {
+
+        PageResponseDto<ProductDetailResponseDto> response =
+                productService.searchByCategoryAndName(category, name, page, size, sortBy);
         return ResponseEntity.ok(response);
     }
 

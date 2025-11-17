@@ -5,6 +5,7 @@ import com.example.test.dto.ProductCreateRequestDto;
 import com.example.test.dto.ProductDetailResponseDto;
 import com.example.test.dto.ProductUpdateRequestDto;
 import com.example.test.entity.Product;
+import com.example.test.entity.ProductCategory;
 import com.example.test.repository.ProductRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -183,6 +184,61 @@ public class ProductService {
         Pageable pageable = PageRequest.of(page, size, sort);
 
         Page<Product> productPage = productRepository.findAll(pageable);
+
+        List<ProductDetailResponseDto> content = productPage.getContent().stream()
+                .map(this::convertToResponseDto)
+                .collect(Collectors.toList());
+
+        return new PageResponseDto<>(
+                content,
+                productPage.getNumber(),
+                productPage.getSize(),
+                productPage.getTotalElements(),
+                productPage.getTotalPages(),
+                productPage.isFirst(),
+                productPage.isLast(),
+                productPage.isEmpty()
+        );
+    }
+
+    // 카테고리별 페이징 조회
+    public PageResponseDto<ProductDetailResponseDto> getProductsByCategory(
+            ProductCategory category, int page, int size, String sortBy) {
+
+        Sort sort = Sort.by(Sort.Direction.DESC, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Product> productPage = productRepository.findByCategory(category, pageable);
+
+        List<ProductDetailResponseDto> content = productPage.getContent().stream()
+                .map(this::convertToResponseDto)
+                .collect(Collectors.toList());
+
+        return new PageResponseDto<>(
+                content,
+                productPage.getNumber(),
+                productPage.getSize(),
+                productPage.getTotalElements(),
+                productPage.getTotalPages(),
+                productPage.isFirst(),
+                productPage.isLast(),
+                productPage.isEmpty()
+        );
+    }
+
+    // 카테고리별 이름 검색
+    public PageResponseDto<ProductDetailResponseDto> searchByCategoryAndName(
+            ProductCategory category, String name, int page, int size, String sortBy) {
+
+        if(name == null || name.trim().isEmpty()) {
+            return getProductsByCategory(category, page, size, sortBy);
+        }
+
+        Sort sort = Sort.by(Sort.Direction.DESC, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Product> productPage = productRepository
+                .findByCategoryAndNameContainingIgnoreCase(category, name, pageable);
 
         List<ProductDetailResponseDto> content = productPage.getContent().stream()
                 .map(this::convertToResponseDto)
