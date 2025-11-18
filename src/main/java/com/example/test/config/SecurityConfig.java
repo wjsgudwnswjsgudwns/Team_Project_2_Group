@@ -100,25 +100,43 @@ public class SecurityConfig {
                                 "/api/products/**",
                                 "/api/cart/**",
                                 "/api/chat/**",
-                                "/api/freeboard/**",      // 자유게시판 추가
-                                "/api/counselboard/**",   // 구매상담게시판 추가
-                                "/api/infoboard/**",      // 정보게시판 추가
+                                "/api/freeboard/**",
+                                "/api/counselboard/**",
+                                "/api/infoboard/**",
                                 "/api/user/profile/**",
                                 "/api/home2/recent"
                         ).permitAll()
-                        // 게시판 GET 요청만 허용 (비로그인 조회 가능)
+
+                        // ✅ Help - 비회원 접근 가능 (구체적인 규칙 먼저)
+                        .requestMatchers(
+                                "/api/help/submit",
+                                "/api/help/guest/inquiry",
+                                "/api/help/guest/**"
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/help/{id}").permitAll()  // 비회원 상세 조회
+
+                        // 게시판 GET 요청 허용
                         .requestMatchers(HttpMethod.GET, "/api/freeboard/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/counselboard/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/infoboard/**").permitAll()
+
                         // 관리자 전용
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        // 게시판 POST/PUT/DELETE는 인증 필요
+                        .requestMatchers("/api/help/admin/**").hasRole("ADMIN")
+
+                        // Help - 회원 전용
+                        .requestMatchers("/api/help/my").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/help/**").authenticated()  // 삭제는 인증 필요
+
+                        // 게시판 POST/PUT/DELETE 인증 필요
                         .requestMatchers("/api/freeboard/**").authenticated()
                         .requestMatchers("/api/counselboard/**").authenticated()
                         .requestMatchers("/api/infoboard/**").authenticated()
-                        // 마이페이지는 인증 필요
+
+                        // 마이페이지 인증 필요
                         .requestMatchers("/api/mypage/**").authenticated()
-                        // 나머지 모든 요청은 인증 필요
+
+                        // 나머지 모든 요청 인증 필요
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
