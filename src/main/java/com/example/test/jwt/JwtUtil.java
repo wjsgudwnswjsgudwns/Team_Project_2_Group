@@ -17,7 +17,7 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private Long expiration; //토큰의 유효시간
 
-    //토큰 생성
+    // 토큰 생성
     public String generateToken(String username, String role) {
 
         return Jwts.builder()

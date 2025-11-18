@@ -21,6 +21,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        // Provider로부터 사용자 정보를 받아옴
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
@@ -30,6 +31,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         System.out.println("Provider: " + registrationId);
         System.out.println("Attributes: " + attributes);
 
+        // 핵심 정보를 추출
         String provider = registrationId;
         String providerId = null;
         String email = null;
@@ -55,12 +57,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             name = (String) attributes.get("name");
             nickname = name;
 
-            System.out.println("구글 사용자 정보:");
-            System.out.println("  providerId: " + providerId);
-            System.out.println("  email: " + email);
-            System.out.println("  name: " + name);
-            System.out.println("  nickname: " + nickname);
-
             if (email == null || email.isEmpty()) {
                 email = "google_" + providerId + "@noemail.local";
             }
@@ -77,13 +73,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         final String finalEmail = email;
         final String finalName = name;
         final String finalNickname = nickname;
-
-        System.out.println("Final 변수 확인:");
-        System.out.println("  finalProvider: " + finalProvider);
-        System.out.println("  finalProviderId: " + finalProviderId);
-        System.out.println("  finalEmail: " + finalEmail);
-        System.out.println("  finalName: " + finalName);
-        System.out.println("  finalNickname: " + finalNickname);
 
         // provider+providerId 우선 조회
         Optional<User> optUser = userRepository.findByProviderAndProviderId(finalProvider, finalProviderId);
@@ -106,18 +95,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             newUser.setRole("ROLE_USER");
 
-            System.out.println("생성된 유저 정보:");
-            System.out.println("  username: " + newUser.getUsername());
-            System.out.println("  email: " + newUser.getEmail());
-            System.out.println("  nickname: " + newUser.getNickname());
-            System.out.println("  role: " + newUser.getRole());
-
             try {
                 User savedUser = userRepository.save(newUser);
-                System.out.println("✅ 새 유저 저장 완료: " + savedUser.getUsername());
+                System.out.println("새 유저 저장 완료: " + savedUser.getUsername());
                 return savedUser;
             } catch (Exception e) {
-                System.err.println("❌ 새 유저 저장 실패: " + e.getMessage());
+                System.err.println("새 유저 저장 실패: " + e.getMessage());
                 throw new RuntimeException("새 유저 저장 실패: " + e.getMessage(), e);
             }
         });
@@ -149,7 +132,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             System.out.println("✅ 기존 유저 정보 업데이트 완료");
         }
 
-        // ✅ 핵심 수정: 원본 attributes를 복사하지 않고 완전히 새로운 Map 생성
+        // 핵심 수정: 원본 attributes를 복사하지 않고 완전히 새로운 Map 생성
         // 이렇게 해야 구글의 "sub" 같은 원본 키가 nameAttributeKey를 방해하지 않음
         Map<String, Object> returnedAttrs = new HashMap<>();
         returnedAttrs.put("username", user.getUsername()); // "google_116743118941825001243"
@@ -166,7 +149,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         System.out.println("role: " + returnedAttrs.get("role"));
         System.out.println("============================");
 
-        // ✅ nameAttributeKey를 "username"으로 설정하여 principal.getName()이 user.getUsername()을 반환하도록 함
+        // nameAttributeKey를 "username"으로 설정하여 principal.getName()이 user.getUsername()을 반환하도록 함
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(user.getRole())),
                 returnedAttrs,

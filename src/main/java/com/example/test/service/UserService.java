@@ -18,7 +18,8 @@ public class UserService implements UserDetailsService  {
 	
 	@Autowired
 	private UserRepository userRepository;
-	
+
+    // DB에서 해당 username의 사용자 정보를 조회
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		
