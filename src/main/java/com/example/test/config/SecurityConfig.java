@@ -67,7 +67,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedOrigins(List.of("http://localhost:3000", "http://172.30.1.55:3000", "http://172.30.1.23:3000"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
         config.setExposedHeaders(List.of("Authorization"));
@@ -153,7 +153,7 @@ public class SecurityConfig {
                                 System.out.println("Principal name (getName()): " + principal.getName());
                                 System.out.println("All Attributes keys: " + principal.getAttributes().keySet());
 
-                                // ✅ CustomOAuth2UserService에서 이미 처리된 경우 (attributes에 username이 있음)
+                                // CustomOAuth2UserService에서 이미 처리된 경우 (attributes에 username이 있음)
                                 if (principal.getAttributes().containsKey("username")) {
                                     System.out.println("✅ CustomOAuth2UserService에서 처리된 사용자");
                                     String username = (String) principal.getAttributes().get("username");
@@ -162,14 +162,14 @@ public class SecurityConfig {
                                     User user = userRepository.findByUsername(username)
                                             .orElseThrow(() -> new RuntimeException("DB에서 사용자를 찾을 수 없습니다: " + username));
 
-                                    System.out.println("✅ DB 조회 성공:");
+                                    System.out.println("DB 조회 성공:");
                                     System.out.println("  - username: " + user.getUsername());
                                     System.out.println("  - role: " + user.getRole());
                                     System.out.println("  - email: " + user.getEmail());
 
                                     // JWT 생성
                                     String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
-                                    System.out.println("✅ JWT 생성 완료: " + token.substring(0, 20) + "...");
+                                    System.out.println("JWT 생성 완료: " + token.substring(0, 20) + "...");
 
                                     // 비밀번호가 null이면 신규 유저로 판단
                                     boolean isNewUser = (user.getPassword() == null);
@@ -179,7 +179,7 @@ public class SecurityConfig {
                                 }
 
                                 // ✅ CustomOAuth2UserService를 거치지 않은 경우 (구글 등)
-                                System.out.println("✅ successHandler에서 직접 처리");
+                                System.out.println("successHandler에서 직접 처리");
 
                                 // providerId와 provider 추출
                                 String tempProviderId = principal.getName();
@@ -212,10 +212,10 @@ public class SecurityConfig {
                                 final String email = tempEmail;
                                 final String name = tempName;
 
-                                System.out.println("✅ providerId 추출: " + providerId);
-                                System.out.println("✅ provider 식별: " + registrationId);
-                                System.out.println("✅ email: " + email);
-                                System.out.println("✅ name: " + name);
+                                System.out.println("providerId 추출: " + providerId);
+                                System.out.println("provider 식별: " + registrationId);
+                                System.out.println("email: " + email);
+                                System.out.println("name: " + name);
 
                                 // ✅ DB에서 사용자 조회 또는 생성
                                 User user = userRepository.findByProviderAndProviderId(registrationId, providerId)
@@ -246,13 +246,13 @@ public class SecurityConfig {
                                 response.sendRedirect("http://localhost:3000/oauth2/redirect?token=" + token);
 
                             } catch (Exception e) {
-                                System.err.println("❌ JWT 발급/리다이렉트 중 오류 발생: " + e.getMessage());
+                                System.err.println("JWT 발급/리다이렉트 중 오류 발생: " + e.getMessage());
                                 e.printStackTrace();
                                 response.sendRedirect("http://localhost:3000/login?error=internal_oauth_error");
                             }
                         })
                         .failureHandler((request, response, exception) -> {
-                            System.err.println("❌ OAuth2 로그인 실패: " + exception.getMessage());
+                            System.err.println("OAuth2 로그인 실패: " + exception.getMessage());
                             exception.printStackTrace();
                             response.sendRedirect("http://localhost:3000/login?error=oauth2");
                         })

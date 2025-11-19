@@ -1,8 +1,10 @@
 package com.example.test.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -20,6 +22,7 @@ public class HelpAnswer {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "help_id")
+    @JsonIgnore
     private Help help; // 문의
 
     @ManyToOne(fetch = FetchType.LAZY)
