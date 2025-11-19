@@ -9,6 +9,7 @@ import com.example.test.service.HelpService;
 import com.example.test.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -60,13 +61,14 @@ public class HelpController {
 
     // 나의 문의
     @GetMapping("/my")
-    public ResponseEntity<?> getMyHelp(@RequestHeader(value = "Authorization", required = false) String authHeader) {
-
+    public ResponseEntity<?> getMyHelp(@RequestHeader(value = "Authorization", required = false) String authHeader,
+                                       @RequestParam(defaultValue = "0") int page,
+                                       @RequestParam(defaultValue = "10") int size) {
         try {
             String token = authHeader.substring(7);
             String username = jwtUtil.extractUsername(token);
 
-            List<Help> helps = helpService.getUserHelps(username);
+            Page<Help> helps = helpService.getUserHelps(username, page, size);
             return ResponseEntity.ok(helps);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e.getMessage());
@@ -86,7 +88,9 @@ public class HelpController {
 
     // 모든 문의 글 조회
     @GetMapping("/admin/list")
-    public ResponseEntity<?> adminHelpList (@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> adminHelpList (@RequestHeader("Authorization") String authHeader,
+                                            @RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "10") int size) {
         try {
             String token = authHeader.substring(7);
             String username = jwtUtil.extractUsername(token);
@@ -98,7 +102,7 @@ public class HelpController {
                 return ResponseEntity.status(403).body("관리자 권한이 필요합니다.");
             }
 
-            List<Help> helps = helpService.getAllHelps();
+            Page<Help> helps = helpService.getAllHelps(page, size);
             return ResponseEntity.ok(helps);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(404).body(e.getMessage());
@@ -106,6 +110,7 @@ public class HelpController {
             return ResponseEntity.status(500).body(e.getMessage());
         }
     }
+
 
     // 답변 상태 업데이트
     @PutMapping("/admin/{id}/answer")
@@ -166,12 +171,15 @@ public class HelpController {
 
     // 비회원 문의 내역 조회
     @PostMapping("/guest/inquiry")
-    public ResponseEntity<?> guestInquiry(@Valid @RequestBody GuestHelpDto helpDto, BindingResult bindingResult) {
+    public ResponseEntity<?> guestInquiry(@Valid @RequestBody GuestHelpDto helpDto,
+                                          BindingResult bindingResult,
+                                          @RequestParam(defaultValue = "0") int page,
+                                          @RequestParam(defaultValue = "10") int size) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body("이름과 휴대폰 번호를 정확히 입력해주세요.");
         }
         try {
-            List<Help> helps = helpService.getGuestHelps(helpDto.getName(), helpDto.getPhone());
+            Page<Help> helps = helpService.getGuestHelps(helpDto.getName(), helpDto.getPhone(), page, size);
 
             if (helps.isEmpty()) {
                 return ResponseEntity.status(404).body("해당 정보로 등록된 문의가 없습니다.");

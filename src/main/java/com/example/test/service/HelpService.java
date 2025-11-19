@@ -6,6 +6,10 @@ import com.example.test.entity.User;
 import com.example.test.repository.HelpRepository;
 import com.example.test.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,11 +60,11 @@ public class HelpService {
         helpRepository.deleteById(id);
     }
 
-    // 나의 문의 내역
-    public List<Help> getUserHelps (String username) {
+    // 나의 문의 내역 (페이징)
+    public Page<Help> getUserHelps (String username, int page, int size) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-
-        return helpRepository.findByUserOrderByInquiryDateDesc(user);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("inquiryDate").descending());
+        return helpRepository.findByUser(user, pageable);
     }
 
     // 특정 문의 조회 (답변 포함)
@@ -70,9 +74,10 @@ public class HelpService {
                 .orElseThrow(() -> new IllegalArgumentException("문의를 찾을 수 없습니다."));
     }
 
-    // 모든 문의 조회
-    public List<Help> getAllHelps () {
-        return helpRepository.findAll();
+    // 모든 문의 조회 (페이징)
+    public Page<Help> getAllHelps (int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("inquiryDate").descending());
+        return helpRepository.findAll(pageable);
     }
 
     // 답변 상태 업데이트
@@ -81,9 +86,10 @@ public class HelpService {
         help.setAnswered(isAnswered);
     }
 
-    // 비회원 문의
-    public List<Help> getGuestHelps (String name, String phone) {
-        return helpRepository.findByNameAndPhoneAndUserIsNullOrderByInquiryDateDesc(name, phone);
+    // 비회원 문의 (페이징)
+    public Page<Help> getGuestHelps (String name, String phone, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("inquiryDate").descending());
+        return helpRepository.findByNameAndPhoneAndUserIsNull(name, phone, pageable);
     }
 
     // 비회원 문의 삭제 권환 확인
@@ -91,10 +97,9 @@ public class HelpService {
         Help help = helpRepository.findById(helpId).orElse(null);
 
         if (help == null || help.getUser() != null) {
-            return false; // 문의가 없거나 회원 문의인 경우
+            return false;
         }
 
-        // 이름과 전화번호가 일치하는지 확인
         return help.getName().equals(name) && help.getPhone().equals(phone);
     }
 }
