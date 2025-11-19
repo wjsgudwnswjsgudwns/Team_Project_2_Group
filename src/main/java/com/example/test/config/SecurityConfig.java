@@ -93,6 +93,7 @@ public class SecurityConfig {
                                 "/api/auth/signup",
                                 "/api/auth/me",
                                 "/api/account/**",
+                                "/api/email/**",
                                 "/oauth2/**",
                                 "/login/oauth2/**",
                                 "/api/ai/**",
