@@ -67,7 +67,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000", "http://172.30.1.55:3000", "http://172.30.1.23:3000"));
+        config.setAllowedOrigins(List.of("http://localhost:3000", "http://172.30.1.55:3000", "http://172.30.1.23:3000", "http://15.165.127.242:3000", "http://opticore.kro.kr", "http://www.opticore.kro.kr"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
         config.setExposedHeaders(List.of("Authorization"));
@@ -176,7 +176,7 @@ public class SecurityConfig {
                                     // 비밀번호가 null이면 신규 유저로 판단
                                     boolean isNewUser = (user.getPassword() == null);
 
-                                    response.sendRedirect("http://localhost:3000/oauth2/redirect?token=" + token);
+                                    response.sendRedirect("http://opticore.kro.kr/oauth2/redirect?token=" + token);
                                     return;
                                 }
 
@@ -245,18 +245,18 @@ public class SecurityConfig {
                                 String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
                                 System.out.println("✅ JWT 생성 완료: " + token.substring(0, 20) + "...");
 
-                                response.sendRedirect("http://localhost:3000/oauth2/redirect?token=" + token);
+                                response.sendRedirect("http://opticore.kro.kr/oauth2/redirect?token=" + token);
 
                             } catch (Exception e) {
                                 System.err.println("JWT 발급/리다이렉트 중 오류 발생: " + e.getMessage());
                                 e.printStackTrace();
-                                response.sendRedirect("http://localhost:3000/login?error=internal_oauth_error");
+                                response.sendRedirect("http://opticore.kro.kr/login?error=internal_oauth_error");
                             }
                         })
                         .failureHandler((request, response, exception) -> {
                             System.err.println("OAuth2 로그인 실패: " + exception.getMessage());
                             exception.printStackTrace();
-                            response.sendRedirect("http://localhost:3000/login?error=oauth2");
+                            response.sendRedirect("http://opticore.kro.kr/login?error=oauth2");
                         })
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
