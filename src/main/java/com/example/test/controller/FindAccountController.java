@@ -201,7 +201,7 @@ public class FindAccountController {
     public ResponseEntity<?> resetPassword(@RequestBody FindAccountDto dto) {
         try {
             // 이메일 인증 완료 여부 확인
-            if (!emailService.isEmailVerified(dto.getEmail(), dto.getUsername())) {
+            if (!emailService.isEmailVerified2(dto.getEmail(), dto.getUsername())) {
                 return ResponseEntity.status(403).body(
                         Map.of("error", "이메일 인증이 완료되지 않았습니다.")
                 );
