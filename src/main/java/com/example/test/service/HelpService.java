@@ -7,6 +7,7 @@ import com.example.test.repository.HelpRepository;
 import com.example.test.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -62,9 +63,11 @@ public class HelpService {
         return helpRepository.findByUserOrderByInquiryDateDesc(user);
     }
 
-    // 특정 문의 조회
+    // 특정 문의 조회 (답변 포함)
+    @Transactional(readOnly = true)
     public Help getHelp (Long id) {
-        return helpRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("문의를 찾을 수 없습니다."));
+        return helpRepository.findByIdWithAnswer(id)
+                .orElseThrow(() -> new IllegalArgumentException("문의를 찾을 수 없습니다."));
     }
 
     // 모든 문의 조회
