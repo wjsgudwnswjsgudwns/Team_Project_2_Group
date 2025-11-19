@@ -52,73 +52,6 @@ public class EmailService {
         return String.valueOf(code);
     }
 
-    public void sendUsernameVerificationCode(String email) {
-        String code = generateVerificationCode();
-        verificationCodes.put(email, code);
-
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("opticore@gmail.com");
-        message.setTo(email);
-        message.setSubject("[OPTICORE] 아이디 찾기 인증 코드");
-        message.setText(
-                "안녕하세요, OPTICORE입니다.\n\n" +
-                        "아이디 찾기를 위한 인증 코드입니다.\n\n" +
-                        "인증 코드: " + code + "\n\n" +
-                        "인증 코드는 10분간 유효합니다.\n\n" +
-                        "감사합니다."
-        );
-
-        mailSender.send(message);
-
-        // 10분 후 인증 코드 삭제
-        new Thread(() -> {
-            try {
-                Thread.sleep(10 * 60 * 1000); // 10분
-                verificationCodes.remove(email);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
-    }
-
-    // 비밀번호 찾기 - 인증 코드 전송
-    public void sendPasswordResetVerificationCode(String email) {
-        try {
-            String code = generateVerificationCode();
-            verificationCodes.put(email, code);
-
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom("opticore@gmail.com");
-            message.setTo(email);
-            message.setSubject("[OPTICORE] 비밀번호 재설정 인증 코드");
-            message.setText(
-                    "안녕하세요, OPTICORE입니다.\n\n" +
-                            "비밀번호 재설정을 위한 인증 코드입니다.\n\n" +
-                            "인증 코드: " + code + "\n\n" +
-                            "인증 코드는 10분간 유효합니다.\n\n" +
-                            "감사합니다."
-            );
-
-            System.out.println("이메일 전송 시도: " + email);
-            mailSender.send(message);
-            System.out.println("이메일 전송 완료: " + email);
-
-            // 10분 후 인증 코드 삭제
-            new Thread(() -> {
-                try {
-                    Thread.sleep(10 * 60 * 1000);
-                    verificationCodes.remove(email);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }).start();
-
-        } catch (Exception e) {
-            System.err.println("이메일 전송 실패: " + email);
-            e.printStackTrace();
-            throw new RuntimeException("이메일 전송에 실패했습니다: " + e.getMessage());
-        }
-    }
 
     // 인증 코드 검증 (아이디 찾기용)
     public boolean verifyCodeForUsername(String email, String code, String username) {
@@ -293,6 +226,73 @@ public class EmailService {
     /**
      * 만료된 인증 코드 정리 (스케줄러로 주기적 실행 권장)
      */
+
+
+    public void sendUsernameVerificationCode(String email) {
+        try {
+            String code = generateVerificationCode();
+            verificationCodes.put(email, code);
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom("opticore@gmail.com");
+            helper.setTo(email);
+            helper.setSubject("[OPTICORE] 아이디 찾기 인증 코드");
+            helper.setText(buildEmailContent(code, "FIND_ID"), true);
+
+            mailSender.send(message);
+
+            // 10분 후 인증 코드 삭제
+            new Thread(() -> {
+                try {
+                    Thread.sleep(10 * 60 * 1000); // 10분
+                    verificationCodes.remove(email);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        } catch (MessagingException e) {
+            System.err.println("이메일 전송 실패: " + email);
+            e.printStackTrace();
+            throw new RuntimeException("이메일 전송에 실패했습니다: " + e.getMessage());
+        }
+    }
+
+    // 비밀번호 찾기 - 인증 코드 전송
+    public void sendPasswordResetVerificationCode(String email) {
+        try {
+            String code = generateVerificationCode();
+            verificationCodes.put(email, code);
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom("opticore@gmail.com");
+            helper.setTo(email);
+            helper.setSubject("[OPTICORE] 비밀번호 재설정 인증 코드");
+            helper.setText(buildEmailContent(code, "FIND_PASSWORD"), true);
+
+            System.out.println("이메일 전송 시도: " + email);
+            mailSender.send(message);
+            System.out.println("이메일 전송 완료: " + email);
+
+            // 10분 후 인증 코드 삭제
+            new Thread(() -> {
+                try {
+                    Thread.sleep(10 * 60 * 1000);
+                    verificationCodes.remove(email);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+        } catch (Exception e) {
+            System.err.println("이메일 전송 실패: " + email);
+            e.printStackTrace();
+            throw new RuntimeException("이메일 전송에 실패했습니다: " + e.getMessage());
+        }
+    }
     public void cleanupExpiredCodes() {
         verificationRepository.deleteByExpiresAtBefore(LocalDateTime.now());
     }
