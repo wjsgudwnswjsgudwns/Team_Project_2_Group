@@ -37,9 +37,6 @@ public class EmailService {
     // 인증 완료 여부 저장 (비밀번호 재설정 권한)
     private Map<String, String> verifiedUsers  = new HashMap<>();
 
-    // 랜덤 인증 코드 생성 (6자리)
-    public String generateVerificationCode() {
-        SecureRandom random = new SecureRandom();
     @Autowired
     private EmailVerificationRepository verificationRepository;
 
@@ -170,7 +167,7 @@ public class EmailService {
     }
 
     // 이메일 인증 완료 여부 확인
-    public boolean isEmailVerified(String email, String username) {
+    public boolean isEmailVerified2(String email, String username) {
         String storedUsername = verifiedUsers.get(email);
         return storedUsername != null && storedUsername.equals(username);
     }
@@ -180,7 +177,6 @@ public class EmailService {
         verifiedUsers.remove(email);
     }
 
-}
     /**
      * 이메일 인증 코드 발송
      */
