@@ -34,7 +34,6 @@ public class HelpAnswerService {
 
         HelpAnswer helpAnswer;
 
-        // 기존 답변이 있으면 수정, 없으면 새로 생성
         if (help.getHelpAnswer() != null) {
             helpAnswer = help.getHelpAnswer();
             helpAnswer.setAnswer(dto.getAnswer());
@@ -48,7 +47,9 @@ public class HelpAnswerService {
         }
 
         helpAnswerRepository.save(helpAnswer);
-        help.setAnswered(true);
+
+        // ⭐ 수정: setAnswered 대신 set + Is + Answered
+        help.setAnswered(true);  // 또는 help.setAnswered(true)
         helpRepository.save(help);
     }
 
@@ -64,6 +65,7 @@ public class HelpAnswerService {
 
         HelpAnswer helpAnswer = help.getHelpAnswer();
 
+        // ⭐ 답변 대기 상태로 업데이트
         help.setAnswered(false);
         help.setHelpAnswer(null);
         helpRepository.save(help);
