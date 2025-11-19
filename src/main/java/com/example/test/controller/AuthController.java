@@ -8,6 +8,7 @@ import com.example.test.entity.User;
 import com.example.test.jwt.JwtUtil;
 import com.example.test.repository.UserRepository;
 import com.example.test.service.UserService;
+import com.example.test.service.EmailService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,7 +39,8 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    //아이디 중복 확인
+    @Autowired
+    private EmailService emailService;
 
     //로그인
     @PostMapping("/login")
@@ -48,7 +50,7 @@ public class AuthController {
 
         System.out.println("인증시작!");
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        System.out.println("인증끝!");
+        System.out.println("인증됨!");
 
         User user = userService.getUser(username).orElseThrow();
         String token = jwtUtil.generateToken(username, user.getRole());
@@ -74,20 +76,17 @@ public class AuthController {
 
         boolean hasPassword = user.getPassword() != null && !user.getPassword().trim().isEmpty();
 
-
-        // ✅ role 정보를 포함한 응답 반환
         Map<String, String> response = new HashMap<>();
         response.put("username", user.getUsername());
         response.put("nickname", safeNickname);
         response.put("email", user.getEmail());
-        response.put("role", user.getRole()); // 추가
+        response.put("role", user.getRole());
         response.put("hasPassword", String.valueOf(hasPassword));
-
 
         return ResponseEntity.ok(response);
     }
 
-    // 회원 가입
+    // ✅ 회원가입 - 이메일 인증 확인 추가
     @PostMapping("/signup")
     public ResponseEntity<?> signup (@Valid @RequestBody UserDto userDto, BindingResult bindingResult) {
 
@@ -99,6 +98,13 @@ public class AuthController {
                     }
             );
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+        }
+
+        // ✅ 이메일 인증 확인
+        if (!emailService.isEmailVerified(userDto.getEmail(), "SIGNUP")) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("emailNotVerified", "이메일 인증이 완료되지 않았습니다.")
+            );
         }
 
         String password = userDto.getPassword();
