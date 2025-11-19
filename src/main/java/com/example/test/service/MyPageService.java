@@ -44,6 +44,9 @@ public class MyPageService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private EmailService emailService;  // ✅ 추가
+
     /**
      * 비밀번호 확인 (본인 인증)
      */
@@ -308,14 +311,20 @@ public class MyPageService {
             user.setNickname(dto.getNickname());
         }
 
-        // 이메일 변경
-        user.setEmail(dto.getEmail());
+        // ✅ 이메일 변경 (이메일이 변경된 경우에만 인증 확인)
+        if (!user.getEmail().equals(dto.getEmail())) {
+            // 이메일 인증 확인
+            if (!emailService.isEmailVerified(dto.getEmail(), "CHANGE_EMAIL")) {
+                throw new RuntimeException("새 이메일 인증이 완료되지 않았습니다.");
+            }
+            user.setEmail(dto.getEmail());
+        }
 
         userRepository.save(user);
     }
 
     /**
-     * 회원 탈퇴
+     * 회원탈퇴
      */
     public void deleteAccount(String username, String password) {
         User user = userRepository.findByUsername(username)
