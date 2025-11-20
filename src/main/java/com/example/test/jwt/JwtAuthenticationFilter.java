@@ -24,17 +24,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtil jwtUtil;
 
-    // ✅ 정적 리소스 경로 추가 (가장 먼저 체크)
-    private static final List<String> STATIC_RESOURCES = List.of(
-            "/",
-            "/index.html",
-            "/favicon.ico",
-            "/manifest.json",
-            "/robots.txt",
-            "/static/",
-            "/assets/"
-    );
-
     // SecurityConfig와 동일한 경로 설정
     private static final List<String> EXCLUDE_URLS = List.of(
             "/api/auth/login",
@@ -67,26 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         System.out.println("🔍 JWT 필터 체크: " + method + " " + requestURI);
 
-        // ✅ 1. 정적 리소스 체크 (최우선)
-        boolean isStaticResource = STATIC_RESOURCES.stream()
-                .anyMatch(uri -> requestURI.equals(uri) || requestURI.startsWith(uri))
-                || requestURI.endsWith(".js")
-                || requestURI.endsWith(".css")
-                || requestURI.endsWith(".png")
-                || requestURI.endsWith(".jpg")
-                || requestURI.endsWith(".svg")
-                || requestURI.endsWith(".ico")
-                || requestURI.endsWith(".json")
-                || requestURI.endsWith(".woff")
-                || requestURI.endsWith(".woff2")
-                || requestURI.endsWith(".ttf");
-
-        if (isStaticResource) {
-            System.out.println("✅ 정적 리소스 - 필터 건너뜀");
-            return true;
-        }
-
-        // ✅ 2. EXCLUDE_URLS: 완전히 필터를 건너뜀
+        // ✅ EXCLUDE_URLS: OAuth2, 로그인 등은 필터를 건너뜀
         boolean isExcluded = EXCLUDE_URLS.stream()
                 .anyMatch(uri -> requestURI.equals(uri) || requestURI.startsWith(uri + "/"));
 
@@ -95,7 +65,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return true;
         }
 
-        // ✅ 3. PERMIT_ALL_URLS: 필터를 건너뜀
+        // ✅ PERMIT_ALL_URLS: API는 필터를 건너뜀
         boolean isPermitAll = PERMIT_ALL_URLS.stream()
                 .anyMatch(uri -> requestURI.startsWith(uri));
 
@@ -104,7 +74,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return true;
         }
 
-        // ✅ 4. 게시판 GET 요청은 필터 건너뜀
+        // ✅ 게시판 GET 요청은 필터 건너뜀
         if ("GET".equals(method) && (
                 requestURI.startsWith("/api/freeboard") ||
                         requestURI.startsWith("/api/counselboard") ||
