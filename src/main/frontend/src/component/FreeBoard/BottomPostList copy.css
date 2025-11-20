@@ -1,0 +1,132 @@
+/* ========== 하단 게시글 목록 ========== */
+.bottom-post-section {
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 2px solid #e5e5e5;
+}
+
+.bottom-post-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 15px 0;
+  text-align: left;
+}
+
+.bottom-post-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.bottom-post-item {
+  padding: 15px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bottom-post-item:hover {
+  background-color: #f9f9f9;
+}
+
+/* 현재 보고 있는 글 강조 */
+.bottom-post-item.current {
+  background-color: #f5f5f5;
+  border-left: 3px solid #333;
+  padding-left: 9px;
+}
+
+.bottom-post-item.current:hover {
+  background-color: #f0f0f0;
+}
+
+.bottom-post-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.bottom-post-title-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bottom-post-item.current .bottom-post-title-text {
+  font-weight: 600;
+}
+
+.bottom-image-badge {
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.bottom-post-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #999;
+}
+
+/* ========== 하단 게시글 페이지네이션 ========== */
+.bottom-post-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.bottom-page-btn {
+  padding: 8px 16px;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background-color 0.2s ease;
+}
+
+.bottom-page-btn:hover:not(:disabled) {
+  background-color: #e0e0e0;
+}
+
+.bottom-page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bottom-page-info {
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* ========== 반응형 ========== */
+@media (max-width: 768px) {
+  .bottom-post-section {
+    margin-top: 30px;
+    padding-top: 20px;
+  }
+
+  .bottom-post-item {
+    padding: 12px 10px;
+  }
+
+  .bottom-post-title-text {
+    font-size: 13px;
+  }
+
+  .bottom-post-meta {
+    font-size: 11px;
+  }
+}

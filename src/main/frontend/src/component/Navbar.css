@@ -1,0 +1,331 @@
+/* ========================================
+   기계적 산업 스타일 - 내비게이션 바 (Navbar)
+   [글로우 효과 제거 버전]
+   ======================================== */
+
+/* 1. 메인 내비게이션 바 (최상단) */
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #000000;
+  /* padding: 15px 50px; */
+  border-bottom: 3px solid #ff3b30; /* 비비드 레드 강조선 */
+  height: 100px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  /* box-shadow 제거 */
+  font-family: "Pretendard", sans-serif;
+}
+
+.navbar-logo {
+  height: 70px;
+  /* filter: grayscale(10%) contrast(1.2); */
+  filter: none;
+  /* transition: transform 0.3s; filter 전환 효과 제거 */
+  transition: transform 0.3s, filter 0.3s;
+}
+
+.navbar-logo:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 5px #ff3b30) /* 1. 선명한 내부 코어 */
+    drop-shadow(0 0 15px #ff3b30) /* 2. 일반적인 글로우 */
+    drop-shadow(0 0 25px rgba(255, 59, 48, 0.6)); /* 3. 넓고 연한 확산 (Opacity 조절) */
+  /* filter: none; 필터 효과 제거 */
+}
+
+/* 로그인/사용자 섹션 */
+nav > div {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* 로그인 링크 버튼 스타일 */
+nav > div > a {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  padding: 10px 20px;
+  border: 2px solid #ffffff; /* 흰색 테두리 */
+  background: transparent;
+  color: #ffffff;
+  text-transform: uppercase;
+  transition: all 0.2s; /* 트랜지션 단순화 */
+  border-radius: 0;
+}
+
+nav > div > a:hover {
+  color: #000000;
+  background-color: #ff3b30; /* 비비드 레드 배경 */
+  border-color: #ff3b30;
+  /* box-shadow 제거 */
+  transform: translateY(0); /* 이동 효과 제거 */
+}
+
+/* 사용자 메뉴 컨테이너 */
+.user-menu-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-right: 30px;
+}
+
+.help-menu-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-right: 30px;
+}
+
+.user-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-right: 30px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+  padding: 10px 15px;
+  display: block;
+  cursor: default;
+  letter-spacing: 1px;
+  border: 2px solid #ffffff;
+  background: #1a1a1a;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+
+.user-nickname {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+  padding: 10px 15px;
+  display: block;
+  cursor: default;
+  letter-spacing: 1px;
+  border: 2px solid #ffffff;
+  background: #1a1a1a;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+
+.user-nickname:hover {
+  background: #ff3b30;
+  border-color: #ff3b30;
+  color: #000000;
+}
+
+/* 드롭다운 메뉴 스타일 */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 180px;
+  background: #0a0a0a;
+  border: 2px solid #ff3b30; /* 비비드 레드 테두리 */
+  /* box-shadow 제거 */
+  display: none;
+  flex-direction: column;
+  z-index: 30;
+  margin-top: 2px;
+  border-radius: 0;
+}
+
+.help-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  /* left: 0; */
+  min-width: 140px;
+  background: #0a0a0a;
+  border: 2px solid #ffffff;
+  display: none;
+  align-items: center;
+}
+
+/* 호버 시 드롭다운 표시 */
+.user-menu-container:hover .dropdown-menu {
+  display: flex;
+}
+
+.help-menu-container:hover .help-dropdown-menu {
+  display: flex;
+}
+
+.dropdown-menu .menu-item {
+  padding: 14px 18px;
+  font-size: 14px;
+  color: #aaaaaa;
+  text-align: left;
+  transition: all 0.2s;
+  border-bottom: 1px dashed #333;
+}
+
+.dropdown-menu .menu-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-menu .menu-item:hover {
+  background-color: rgba(255, 59, 48, 0.1);
+  color: #ff3b30;
+  padding-left: 20px; /* 이동 효과 단순화 */
+}
+
+.logout-btn-dropdown {
+  width: 100%;
+  text-align: left;
+}
+
+/* 2. 서브 내비게이션 바 (메인 메뉴) */
+.sub-navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #111111;
+  padding: 0 50px;
+  height: 40px;
+  border-bottom: 1px solid #333;
+  position: sticky;
+  top: 100px;
+  z-index: 15;
+  /* box-shadow 제거 */
+}
+
+/* 햄버거 메뉴 버튼: 항상 보이도록 */
+.menu-toggle-btn {
+  display: block;
+  font-size: 24px;
+  padding: 0 10px;
+  color: #ff3b30;
+  margin-right: 20px;
+  transition: color 0.2s;
+}
+
+.menu-toggle-btn:hover {
+  color: #ffffff;
+}
+
+.sub-navbar-menu {
+  display: flex;
+  height: 100%;
+  flex: 1;
+  justify-content: flex-start;
+}
+
+.sub-menu-item {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 25px;
+  font-size: 13px;
+  font-weight: 900;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.sub-menu-item:hover {
+  color: #ff3b30;
+  border-bottom-color: #ff3b30;
+  /* text-shadow 제거 */
+}
+
+.help-menu-item {
+  min-height: 50px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 25px;
+  font-size: 13px;
+  font-weight: 900;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.help-menu-item:hover {
+  color: #ff3b30;
+  border-bottom-color: #ff3b30;
+  /* text-shadow 제거 */
+}
+
+/* 3. 사이드 드롭다운 메뉴 (CPU 등 세부 메뉴) */
+.side-dropdown-menu {
+  position: fixed;
+  top: 140px;
+  left: 0;
+  width: 280px;
+  height: calc(100vh - 140px);
+  background: #0a0a0a;
+  border-right: 3px solid #ff3b30;
+  /* box-shadow 제거 */
+  padding: 30px 0;
+  z-index: 25;
+  overflow-y: auto;
+  border-radius: 0;
+}
+
+.side-menu-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.side-menu-item {
+  padding: 14px 30px;
+  color: #aaaaaa;
+  font-size: 15px;
+  font-weight: 600;
+  border-left: 4px solid transparent;
+  transition: all 0.2s;
+}
+
+.side-menu-item:hover {
+  background: rgba(255, 59, 48, 0.15);
+  color: #ffffff;
+  border-left-color: #ff3b30;
+  padding-left: 35px;
+  /* text-shadow 제거 */
+}
+
+/* === 반응형 스타일 === */
+@media (max-width: 1024px) {
+  .sub-navbar-menu {
+    display: none;
+  }
+
+  .sub-navbar-container {
+    justify-content: flex-start;
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  nav {
+    padding: 10px 20px;
+    height: 80px;
+  }
+
+  .navbar-logo {
+    height: 50px;
+  }
+
+  .user-nickname {
+    display: none;
+  }
+
+  .sub-navbar-container {
+    top: 80px;
+    padding: 0 10px;
+  }
+
+  .side-dropdown-menu {
+    top: 120px;
+    height: calc(100vh - 120px);
+    width: 100%;
+  }
+}

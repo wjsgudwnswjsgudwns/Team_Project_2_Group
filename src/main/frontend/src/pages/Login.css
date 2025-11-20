@@ -1,0 +1,241 @@
+/* ========================================
+   기계적 산업 스타일 - 로그인 폼
+   [모노크롬 & 비비드 레드 테마 적용]
+   ======================================== */
+
+/* === 페이지 컨테이너 === */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 100px);
+  padding: 60px 20px;
+  /* 배경을 검은색, 그리드 패턴으로 변경 */
+  background-color: #000000;
+  background-image: repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.02) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(255, 255, 255, 0.02) 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(100, 100, 100, 0.02) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(100, 100, 100, 0.02) 3px
+    );
+}
+
+/* === 로그인 박스 === */
+.login-box {
+  width: 100%;
+  max-width: 450px;
+  /* 배경 및 테두리 변경 */
+  background-color: rgba(10, 10, 10, 0.95);
+  padding: 50px 45px;
+  border-radius: 0; /* 각진 스타일 */
+  border: 2px solid #ffffff;
+  /* box-shadow: 0 0 40px rgba(255, 255, 255, 0.3);  */
+  /* 폰트 적용 */
+  font-family: "Pretendard", sans-serif;
+}
+
+/* === 로고/타이틀 === */
+.login-logo {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #ffffff;
+  margin-bottom: 45px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  /* 폰트 적용 */
+  font-family: "Pretendard", sans-serif;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* 간격 증가 */
+}
+
+/* === 입력 필드 === */
+.login-input {
+  width: 100%;
+  padding: 18px 20px; /* 패딩 증가 */
+  font-size: 16px;
+  /* 배경, 테두리, 텍스트 색상 변경 */
+  background-color: rgba(30, 30, 30, 0.8);
+  color: #ffffff;
+  border: 1px solid #555;
+  border-radius: 0;
+  outline: none;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  /* 폰트 적용 */
+  font-family: "Pretendard", sans-serif;
+}
+
+.login-input:focus {
+  border-color: #ff3b30; /* 포커스 시 비비드 레드 */
+  /* box-shadow: 0 0 8px rgba(255, 59, 48, 0.5);  */
+}
+
+.login-input::placeholder {
+  color: #666;
+}
+
+/* === 제출 버튼 === */
+.login-submit-btn {
+  width: 100%;
+  padding: 18px;
+  /* 배경, 색상, 테두리 변경 */
+  background-color: #ffffff;
+  color: #000000;
+  border: 2px solid #ffffff;
+  border-radius: 0;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 900;
+  margin-top: 15px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  /* 폰트 적용 */
+  font-family: "Pretendard", sans-serif;
+}
+
+.login-submit-btn:hover {
+  background-color: #ff3b30; /* 호버 시 비비드 레드 */
+  color: #ffffff;
+  border-color: #ff3b30;
+  /* box-shadow: 0 0 15px rgba(255, 59, 48, 0.8); */
+  transform: translateY(-2px);
+}
+
+.login-submit-btn:disabled {
+  background-color: #333;
+  color: #666;
+  border-color: #555;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* === 구분선 === */
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 30px 0; /* 마진 증가 */
+  color: #999;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px dashed #444; /* 점선 경계선 */
+}
+
+.divider span {
+  padding: 0 15px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #888;
+}
+
+/* === 네이버 로그인 버튼 === */
+.naver-login-btn {
+  width: 100%;
+  padding: 18px;
+  /* 네이버 색상 유지 */
+  background-color: #03c75a;
+  color: white;
+  border: 2px solid #03c75a; /* 테두리 굵게 */
+  border-radius: 0;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  /* 폰트 적용 */
+  font-family: "Pretendard", sans-serif;
+}
+
+.naver-login-btn:hover {
+  background-color: #02b350;
+  /* box-shadow: 0 0 15px rgba(3, 199, 90, 0.5);  */
+  transform: translateY(-2px);
+}
+
+.naver-icon {
+  width: 20px;
+  height: 20px;
+  /* 네이버 아이콘 스타일 유지 */
+}
+
+/* === 회원가입 링크 === */
+.login-signup-link {
+  text-align: center;
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 1px solid #444; /* 테두리 변경 */
+}
+
+.login-signup-link a {
+  color: #ffffff; /* 텍스트 흰색 */
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.login-signup-link a:hover {
+  color: #ff3b30; /* 호버 시 비비드 레드 */
+  text-decoration: none;
+  text-shadow: 0 0 5px rgba(255, 59, 48, 0.5);
+}
+
+.login-signup-link span {
+  font-size: 13px;
+  color: #999;
+  margin-right: 5px;
+}
+
+/* === 반응형 디자인 === */
+@media (max-width: 768px) {
+  .login-container {
+    padding: 40px 15px;
+  }
+
+  .login-box {
+    padding: 35px 25px;
+    border-width: 1px;
+    /* box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); */
+  }
+
+  .login-logo {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+  }
+
+  .login-input {
+    padding: 15px 16px;
+    font-size: 15px;
+  }
+
+  .login-submit-btn,
+  .naver-login-btn {
+    padding: 15px;
+    font-size: 15px;
+    letter-spacing: 1px;
+  }
+}
