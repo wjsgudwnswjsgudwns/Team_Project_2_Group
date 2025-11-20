@@ -17,7 +17,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -66,30 +65,6 @@ public class SecurityConfig {
     }
 
     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring()
-                .requestMatchers(
-                        "/",
-                        "/index.html",
-                        "/favicon.ico",
-                        "/manifest.json",
-                        "/robots.txt",
-                        "/static/**",
-                        "/assets/**",
-                        "/*.js",
-                        "/*.css",
-                        "/*.png",
-                        "/*.jpg",
-                        "/*.svg",
-                        "/*.ico",
-                        "/*.json",
-                        "/*.woff",
-                        "/*.woff2",
-                        "/*.ttf"
-                );
-    }
-
-    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:3000", "http://172.30.1.55:3000", "http://172.30.1.23:3000", "http://15.165.127.242:3000", "http://opticore.kro.kr", "http://www.opticore.kro.kr"));
@@ -113,14 +88,29 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
+                        // ✅ 정적 리소스는 맨 위에 (순서 중요!)
                         .requestMatchers(
                                 "/",
                                 "/index.html",
-                                "/static/**",
-                                "/manifest.json",
-                                "/logo192.png",
-                                "/logo512.png",
                                 "/favicon.ico",
+                                "/manifest.json",
+                                "/robots.txt",
+                                "/static/**",
+                                "/assets/**",
+                                "/*.js",
+                                "/*.css",
+                                "/*.png",
+                                "/*.jpg",
+                                "/*.svg",
+                                "/*.ico",
+                                "/*.json",
+                                "/*.woff",
+                                "/*.woff2",
+                                "/*.ttf"
+                        ).permitAll()
+
+                        // API 엔드포인트
+                        .requestMatchers(
                                 "/api/auth/login",
                                 "/api/auth/signup",
                                 "/api/auth/me",
@@ -141,13 +131,13 @@ public class SecurityConfig {
                                 "/api/home2/recent"
                         ).permitAll()
 
-                        // ✅ Help - 비회원 접근 가능 (구체적인 규칙 먼저)
+                        // ✅ Help - 비회원 접근 가능
                         .requestMatchers(
                                 "/api/help/submit",
                                 "/api/help/guest/inquiry",
                                 "/api/help/guest/**"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/help/{id}").permitAll()  // 비회원 상세 조회
+                        .requestMatchers(HttpMethod.GET, "/api/help/{id}").permitAll()
 
                         // 게시판 GET 요청 허용
                         .requestMatchers(HttpMethod.GET, "/api/freeboard/**").permitAll()
@@ -160,7 +150,7 @@ public class SecurityConfig {
 
                         // Help - 회원 전용
                         .requestMatchers("/api/help/my").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/help/**").authenticated()  // 삭제는 인증 필요
+                        .requestMatchers(HttpMethod.DELETE, "/api/help/**").authenticated()
 
                         // 게시판 POST/PUT/DELETE 인증 필요
                         .requestMatchers("/api/freeboard/**").authenticated()
@@ -187,12 +177,10 @@ public class SecurityConfig {
                                 System.out.println("Principal name (getName()): " + principal.getName());
                                 System.out.println("All Attributes keys: " + principal.getAttributes().keySet());
 
-                                // CustomOAuth2UserService에서 이미 처리된 경우 (attributes에 username이 있음)
                                 if (principal.getAttributes().containsKey("username")) {
                                     System.out.println("✅ CustomOAuth2UserService에서 처리된 사용자");
                                     String username = (String) principal.getAttributes().get("username");
 
-                                    // DB에서 username으로 조회
                                     User user = userRepository.findByUsername(username)
                                             .orElseThrow(() -> new RuntimeException("DB에서 사용자를 찾을 수 없습니다: " + username));
 
@@ -201,27 +189,22 @@ public class SecurityConfig {
                                     System.out.println("  - role: " + user.getRole());
                                     System.out.println("  - email: " + user.getEmail());
 
-                                    // JWT 생성
                                     String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
                                     System.out.println("JWT 생성 완료: " + token.substring(0, 20) + "...");
 
-                                    // 비밀번호가 null이면 신규 유저로 판단
                                     boolean isNewUser = (user.getPassword() == null);
 
                                     response.sendRedirect("http://opticore.kro.kr/oauth2/redirect?token=" + token);
                                     return;
                                 }
 
-                                // ✅ CustomOAuth2UserService를 거치지 않은 경우 (구글 등)
                                 System.out.println("successHandler에서 직접 처리");
 
-                                // providerId와 provider 추출
                                 String tempProviderId = principal.getName();
                                 String tempRegistrationId = null;
                                 String tempEmail = null;
                                 String tempName = null;
 
-                                // OAuth2 제공자 식별
                                 Object issuerObj = principal.getAttributes().get("iss");
                                 String issuer = issuerObj != null ? issuerObj.toString() : null;
 
@@ -251,7 +234,6 @@ public class SecurityConfig {
                                 System.out.println("email: " + email);
                                 System.out.println("name: " + name);
 
-                                // ✅ DB에서 사용자 조회 또는 생성
                                 User user = userRepository.findByProviderAndProviderId(registrationId, providerId)
                                         .orElseGet(() -> {
                                             System.out.println("🆕 새 사용자 생성 중...");
@@ -273,7 +255,6 @@ public class SecurityConfig {
                                 System.out.println("  - role: " + user.getRole());
                                 System.out.println("  - email: " + user.getEmail());
 
-                                // ✅ JWT 생성
                                 String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
                                 System.out.println("✅ JWT 생성 완료: " + token.substring(0, 20) + "...");
 
