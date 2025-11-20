@@ -90,7 +90,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/",
+                                "/index.html",
                                 "/static/**",
+                                "/manifest.json",
+                                "/logo192.png",
+                                "/logo512.png",
                                 "/favicon.ico",
                                 "/api/auth/login",
                                 "/api/auth/signup",

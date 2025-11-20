@@ -9,7 +9,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/{path:^(?!api$).*$}/**")
+        // 루트 경로만 명시적으로 설정
+        registry.addViewController("/")
                 .setViewName("forward:/index.html");
     }
 }
