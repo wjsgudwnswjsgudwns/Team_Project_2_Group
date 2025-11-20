@@ -1,0 +1,211 @@
+/* ========================================
+   기계적 산업 스타일 - 회원가입 폼
+   [글로우 효과 제거 버전]
+   ======================================== */
+
+/* === 페이지 컨테이너 === */
+.signup-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 100px);
+  padding: 60px 20px;
+  /* 배경을 검은색, 그리드 패턴으로 변경 */
+  background-color: #000000;
+  background-image: repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.02) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(255, 255, 255, 0.02) 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(100, 100, 100, 0.02) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(100, 100, 100, 0.02) 3px
+    );
+}
+
+/* === 회원가입 박스 === */
+.signup-box {
+  width: 100%;
+  max-width: 500px;
+  /* 배경 및 테두리 변경 */
+  background-color: rgba(10, 10, 10, 0.95);
+  padding: 50px 45px;
+  border-radius: 0; /* 각진 스타일 */
+  border: 2px solid #ffffff;
+  /* box-shadow: 0 0 40px rgba(255, 255, 255, 0.3); <- 글로우 효과 제거 */
+  /* 폰트 적용 */
+  font-family: "Pretendard", sans-serif;
+}
+
+/* === 타이틀 === */
+.signup-title {
+  text-align: center;
+  font-size: 2rem; /* 크기 증가 */
+  font-weight: 900;
+  color: #ffffff;
+  margin-bottom: 40px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  /* 폰트 적용 */
+  font-family: "Pretendard", sans-serif;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* 간격 증가 */
+}
+
+/* === 입력 필드 === */
+.signup-input {
+  width: 100%;
+  padding: 18px 20px; /* 패딩 증가 */
+  font-size: 16px;
+  /* 배경, 테두리, 텍스트 색상 변경 */
+  background-color: rgba(30, 30, 30, 0.8);
+  color: #ffffff;
+  border: 1px solid #555;
+  border-radius: 0;
+  outline: none;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  /* 폰트 적용 */
+  font-family: "Pretendard", sans-serif;
+}
+
+.signup-input:focus {
+  border-color: #ff3b30; /* 포커스 시 비비드 레드 */
+  /* box-shadow: 0 0 8px rgba(255, 59, 48, 0.5); <- 글로우 효과 제거 */
+}
+
+.signup-input::placeholder {
+  color: #666;
+}
+
+/* === 에러 메시지 === */
+.signup-error {
+  color: #ff3b30; /* 비비드 레드로 변경 */
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: -8px;
+  margin-bottom: 5px;
+  padding-left: 5px;
+  letter-spacing: 0.5px;
+}
+
+/* === 제출 버튼 === */
+.signup-submit-btn {
+  width: 100%;
+  padding: 18px;
+  /* 배경, 색상, 테두리 변경 */
+  background-color: #ffffff;
+  color: #000000;
+  border: 2px solid #ffffff;
+  border-radius: 0;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 900;
+  margin-top: 15px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  /* 폰트 적용 */
+  font-family: "Pretendard", sans-serif;
+}
+
+.signup-submit-btn:hover {
+  background-color: #ff3b30; /* 호버 시 비비드 레드 */
+  color: #ffffff;
+  border-color: #ff3b30;
+  /* box-shadow: 0 0 15px rgba(255, 59, 48, 0.8); <- 글로우 효과 제거 */
+  transform: translateY(-2px);
+}
+
+.signup-submit-btn:disabled {
+  background-color: #333;
+  color: #666;
+  border-color: #555;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* === 로그인 링크 === */
+.signup-login-link {
+  text-align: center;
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 1px solid #444;
+  color: #999;
+  font-size: 14px;
+  /* 폰트 적용 */
+  font-family: "Pretendard", sans-serif;
+}
+
+.signup-login-link a {
+  color: #ffffff; /* 텍스트 흰색 */
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 5px;
+  transition: color 0.2s ease;
+}
+
+.signup-login-link a:hover {
+  color: #ff3b30; /* 호버 시 비비드 레드 */
+  text-decoration: underline;
+}
+
+/* === 반응형 디자인 === */
+@media (max-width: 768px) {
+  .signup-container {
+    padding: 40px 15px;
+  }
+
+  .signup-box {
+    padding: 35px 25px;
+    border-width: 1px;
+  }
+
+  .signup-title {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+  }
+
+  .signup-input {
+    padding: 15px 16px;
+    font-size: 15px;
+  }
+
+  .signup-submit-btn {
+    padding: 15px;
+    font-size: 15px;
+    letter-spacing: 1px;
+  }
+
+  .signup-error {
+    font-size: 12px;
+  }
+}
+
+.password-rules {
+  display: flex;
+  margin-top: 8px;
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.password-rules .valid {
+  color: #2ecc71; /* 초록색 */
+  transition: 0.2s;
+}
+
+.password-rules .invalid {
+  color: #e74c3c; /* 빨간색 */
+  transition: 0.2s;
+}
