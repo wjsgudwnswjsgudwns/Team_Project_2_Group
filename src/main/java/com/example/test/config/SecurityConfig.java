@@ -194,7 +194,7 @@ public class SecurityConfig {
 
                                     boolean isNewUser = (user.getPassword() == null);
 
-                                    response.sendRedirect("http://ec2-15-165-127-242.ap-northeast-2.compute.amazonaws.com:8880/oauth2/redirect?token=" + token);
+                                    response.sendRedirect("http://team2-free-project-s3-bucket.s3-website.ap-northeast-2.amazonaws.com/oauth2/redirect?token=" + token);
                                     return;
                                 }
 
@@ -258,18 +258,18 @@ public class SecurityConfig {
                                 String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
                                 System.out.println("✅ JWT 생성 완료: " + token.substring(0, 20) + "...");
 
-                                response.sendRedirect("http://ec2-15-165-127-242.ap-northeast-2.compute.amazonaws.com:8880/oauth2/redirect?token=" + token);
+                                response.sendRedirect("http://team2-free-project-s3-bucket.s3-website.ap-northeast-2.amazonaws.com/oauth2/redirect?token=" + token);
 
                             } catch (Exception e) {
                                 System.err.println("JWT 발급/리다이렉트 중 오류 발생: " + e.getMessage());
                                 e.printStackTrace();
-                                response.sendRedirect("http://ec2-15-165-127-242.ap-northeast-2.compute.amazonaws.com:8880/login?error=internal_oauth_error");
+                                response.sendRedirect("http://team2-free-project-s3-bucket.s3-website.ap-northeast-2.amazonaws.com/login?error=internal_oauth_error");
                             }
                         })
                         .failureHandler((request, response, exception) -> {
                             System.err.println("OAuth2 로그인 실패: " + exception.getMessage());
                             exception.printStackTrace();
-                            response.sendRedirect("http://ec2-15-165-127-242.ap-northeast-2.compute.amazonaws.com:8880/login?error=oauth2");
+                            response.sendRedirect("http://team2-free-project-s3-bucket.s3-website.ap-northeast-2.amazonaws.com/login?error=oauth2");
                         })
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
