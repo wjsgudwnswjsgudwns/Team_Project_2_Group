@@ -194,7 +194,7 @@ public class SecurityConfig {
 
                                     // ⬇️ 로그 추가
                                     try {
-                                        String redirectUrl = "http://team2-free-project-s3-bucket.s3-website.ap-northeast-2.amazonaws.com/oauth2/redirect?token=" + token;
+                                        String redirectUrl = "http://team2-free-project-s3-bucket.s3-website.ap-northeast-2.amazonaws.com/#/oauth2/redirect?token=" + token;
                                         System.out.println("🔄 리다이렉트 시도: " + redirectUrl);
 
                                         response.sendRedirect(redirectUrl);
@@ -271,7 +271,7 @@ public class SecurityConfig {
 
                                 // ⬇️ 로그 추가
                                 try {
-                                    String redirectUrl = "http://team2-free-project-s3-bucket.s3-website.ap-northeast-2.amazonaws.com/oauth2/redirect?token=" + token;
+                                    String redirectUrl = "http://team2-free-project-s3-bucket.s3-website.ap-northeast-2.amazonaws.com/#/oauth2/redirect?token=" + token;
                                     System.out.println("🔄 리다이렉트 시도: " + redirectUrl);
 
                                     response.sendRedirect(redirectUrl);
