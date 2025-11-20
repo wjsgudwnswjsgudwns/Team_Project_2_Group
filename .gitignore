@@ -35,3 +35,17 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# 프론트엔드
+src/main/frontend/node_modules/
+src/main/frontend/build/
