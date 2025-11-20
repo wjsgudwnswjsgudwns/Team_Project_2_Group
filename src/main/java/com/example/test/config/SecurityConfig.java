@@ -67,7 +67,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000", "http://172.30.1.55:3000", "http://172.30.1.23:3000", "http://15.165.127.242:3000", "http://opticore.kro.kr", "http://www.opticore.kro.kr", "http://52.78.34.139:8880"));
+        config.setAllowedOrigins(List.of("http://15.165.127.242:3000", "http://opticore.kro.kr", "http://www.opticore.kro.kr"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
         config.setExposedHeaders(List.of("Authorization"));
