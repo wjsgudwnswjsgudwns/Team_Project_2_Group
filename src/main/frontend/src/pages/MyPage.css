@@ -1,0 +1,666 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css");
+
+/* ========================================
+   기계적 산업 스타일 - 마이페이지
+   [모노크롬 & 비비드 레드 테마 적용]
+   ======================================== */
+
+@keyframes borderGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 5px #ff3b30, 0 0 10px #ff3b30, inset 0 0 5px #ff3b30;
+  }
+  50% {
+    box-shadow: 0 0 10px #ff3b30, 0 0 20px #ff3b30, inset 0 0 10px #ff3b30;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes neonPulse {
+  0%,
+  100% {
+    text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff;
+  }
+  50% {
+    text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff;
+  }
+}
+
+/* === 메인 컨테이너 === */
+.mypage-container {
+  min-height: calc(100vh - 170px);
+  padding: 60px 20px;
+  background: #0a0a0a;
+  background-image: repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.02) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(255, 255, 255, 0.02) 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(100, 100, 100, 0.02) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(100, 100, 100, 0.02) 3px
+    );
+}
+
+.mypage-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* === 비밀번호 확인 박스 === */
+.password-verify-box {
+  max-width: 500px;
+  margin: 100px auto;
+  background: rgba(15, 15, 15, 0.95);
+  border: 2px solid #ffffff;
+  padding: 60px;
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+  position: relative;
+}
+
+.password-verify-box::before,
+.password-verify-box::after {
+  content: "";
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 3px solid #ff3b30;
+}
+
+.password-verify-box::before {
+  top: -2px;
+  left: -2px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.password-verify-box::after {
+  bottom: -2px;
+  right: -2px;
+  border-left: none;
+  border-top: none;
+}
+
+.verify-title {
+  font-size: 24px;
+  font-weight: 900;
+  color: #ffffff;
+  margin-bottom: 16px;
+  text-align: center;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.verify-subtitle {
+  font-size: 13px;
+  color: #888;
+  text-align: center;
+  margin-bottom: 40px;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 600;
+}
+
+.verify-input {
+  width: 100%;
+  padding: 16px 20px;
+  border: 2px solid #555;
+  background: rgba(20, 20, 20, 0.8);
+  color: #ccc;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s;
+  margin-bottom: 24px;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 600;
+}
+
+.verify-input:focus {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.verify-input::placeholder {
+  color: #555;
+}
+
+.verify-btn {
+  width: 100%;
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 900;
+  transition: all 0.3s;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.verify-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+  transform: scale(1.02);
+}
+
+.verify-btn:disabled {
+  background: rgba(60, 60, 60, 0.2);
+  color: #555;
+  border-color: #444;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* === 탭 버튼 === */
+.mypage-tabs {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.mypage-tab-btn {
+  flex: 1;
+  min-width: 180px;
+  padding: 20px 24px;
+  background: rgba(20, 20, 20, 0.5);
+  border: 2px solid #555;
+  color: #aaaaaa;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: relative;
+}
+
+.mypage-tab-btn::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(to right, #ffffff, #ff3b30);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s;
+}
+
+.mypage-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #ffffff;
+  color: #ffffff;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  transform: translateY(-4px);
+}
+
+.mypage-tab-btn:hover::before {
+  transform: scaleX(1);
+}
+
+.mypage-tab-btn.active {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
+  color: #ffffff;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+}
+
+.mypage-tab-btn.active::before {
+  transform: scaleX(1);
+}
+
+/* === 컨텐츠 박스 === */
+.mypage-content-box {
+  background: rgba(15, 15, 15, 0.95);
+  border: 2px solid #555;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+  padding: 48px;
+  position: relative;
+}
+
+.mypage-content-box::before,
+.mypage-content-box::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ff3b30;
+}
+
+.mypage-content-box::before {
+  top: -2px;
+  left: -2px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.mypage-content-box::after {
+  bottom: -2px;
+  right: -2px;
+  border-left: none;
+  border-top: none;
+}
+
+/* === 섹션 제목 === */
+.section-title {
+  font-size: 20px;
+  font-weight: 900;
+  color: #ffffff;
+  margin-bottom: 32px;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-bottom: 2px solid #555;
+  padding-bottom: 16px;
+}
+
+/* === 사용자 정보 그리드 === */
+.user-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.info-item {
+  background: rgba(20, 20, 20, 0.5);
+  padding: 20px;
+  border: 2px solid rgba(100, 100, 100, 0.4);
+  transition: all 0.3s;
+  position: relative;
+}
+
+.info-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: transparent;
+  transition: background 0.3s;
+}
+
+.info-item:hover {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  transform: translateX(6px);
+}
+
+.info-item:hover::before {
+  background: linear-gradient(to bottom, #ffffff, #666);
+}
+
+.info-label {
+  font-size: 11px;
+  font-weight: 900;
+  color: #888;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.info-value {
+  font-size: 16px;
+  color: #ccc;
+  font-weight: 600;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.oauth-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(255, 59, 48, 0.2);
+  color: #ff3b30;
+  border: 1px solid #ff3b30;
+  font-size: 10px;
+  font-weight: 900;
+  margin-left: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* === 통계 카드 === */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.stat-card {
+  background: rgba(20, 20, 20, 0.5);
+  padding: 32px;
+  border: 2px solid rgba(100, 100, 100, 0.4);
+  text-align: center;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.stat-card::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 0;
+  height: 3px;
+  background: linear-gradient(to right, #ffffff, #ff3b30);
+  transform: translateX(-50%);
+  transition: width 0.3s;
+}
+
+.stat-card:hover {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+  transform: translateY(-4px);
+}
+
+.stat-card:hover::before {
+  width: 100%;
+}
+
+.stat-number {
+  font-size: 36px;
+  font-weight: 900;
+  color: #ffffff;
+  margin-bottom: 8px;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #888;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* === 폼 입력 === */
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 900;
+  color: #888;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.form-input {
+  width: 100%;
+  padding: 16px 20px;
+  border: 2px solid #555;
+  background: rgba(20, 20, 20, 0.8);
+  color: #ccc;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 600;
+}
+
+.form-input:focus {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.form-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(40, 40, 40, 0.5);
+}
+
+.form-input::placeholder {
+  color: #555;
+}
+
+.form-note {
+  font-size: 11px;
+  color: #666;
+  margin-top: 8px;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 600;
+}
+
+/* === 버튼 그룹 === */
+.button-group {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 40px;
+}
+
+.primary-btn {
+  padding: 16px 36px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 900;
+  transition: all 0.3s;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.primary-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+  transform: scale(1.02);
+}
+
+.danger-btn {
+  padding: 16px 36px;
+  background: rgba(255, 59, 48, 0.2);
+  color: #ff3b30;
+  border: 2px solid #ff3b30;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 900;
+  transition: all 0.3s;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.danger-btn:hover {
+  background: rgba(255, 59, 48, 0.3);
+  box-shadow: 0 0 30px rgba(255, 59, 48, 0.5);
+  transform: scale(1.02);
+}
+
+/* === 리스트 아이템 === */
+.post-list,
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.post-item,
+.comment-item {
+  padding: 20px;
+  border-bottom: 1px solid rgba(100, 100, 100, 0.3);
+  cursor: pointer;
+  transition: all 0.3s;
+  background: rgba(15, 15, 15, 0.5);
+  position: relative;
+}
+
+.post-item::before,
+.comment-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(to bottom, #ffffff, #666);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.post-item:hover,
+.comment-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: #ffffff;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  transform: translateX(6px);
+}
+
+.post-item:hover::before,
+.comment-item:hover::before {
+  opacity: 1;
+}
+
+.post-title,
+.comment-board-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #e0e0e0;
+  margin-bottom: 8px;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.post-meta,
+.comment-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: #888;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 600;
+}
+
+.board-type-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid #10b981;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-right: 8px;
+}
+
+.comment-content {
+  font-size: 14px;
+  color: #ccc;
+  margin: 8px 0;
+  line-height: 1.5;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 600;
+}
+
+.empty-message {
+  text-align: center;
+  padding: 80px 20px;
+  color: #666;
+  font-size: 13px;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* === 로딩 === */
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  margin: 80px auto;
+  border: 4px solid rgba(60, 60, 60, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+}
+
+/* === 반응형 === */
+@media (max-width: 768px) {
+  .mypage-container {
+    padding: 40px 16px;
+  }
+
+  .mypage-content-box {
+    padding: 32px 24px;
+  }
+
+  .password-verify-box {
+    padding: 40px 32px;
+    margin: 60px auto;
+  }
+
+  .mypage-tabs {
+    gap: 12px;
+  }
+
+  .mypage-tab-btn {
+    min-width: 140px;
+    padding: 16px 20px;
+    font-size: 12px;
+  }
+
+  .user-info-grid,
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .primary-btn,
+  .danger-btn {
+    width: 100%;
+  }
+}

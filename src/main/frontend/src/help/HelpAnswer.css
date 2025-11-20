@@ -1,0 +1,326 @@
+/* ========================================
+   답변 시스템 스타일 (기계적 산업 스타일)
+   ======================================== */
+
+/* 답변 섹션 */
+.answer-section {
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 1px solid #333;
+}
+
+/* 답변 작성 버튼 */
+.write-answer-btn {
+  width: 100%;
+  padding: 16px 40px;
+  background: transparent;
+  border: 2px solid #ff3b30;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 0;
+  font-family: "Pretendard", sans-serif;
+}
+
+.write-answer-btn:hover {
+  background: #ff3b30;
+  color: #000000;
+  transform: translateY(-2px);
+}
+
+.write-answer-btn:active {
+  transform: translateY(0);
+}
+
+/* 답변 폼 */
+.answer-form {
+  background: #111111;
+  border: 2px solid #333;
+  padding: 30px;
+  border-radius: 0;
+}
+
+.answer-form h3 {
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #ff3b30;
+  margin: 0 0 25px 0;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #333;
+}
+
+.answer-form textarea {
+  width: 100%;
+  min-height: 200px;
+  padding: 14px 18px;
+  background: #1a1a1a;
+  border: 2px solid #333;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 500;
+  transition: all 0.2s;
+  border-radius: 0;
+  resize: vertical;
+  font-family: "Pretendard", sans-serif;
+  box-sizing: border-box;
+}
+
+.answer-form textarea::placeholder {
+  color: #666;
+  font-weight: 400;
+}
+
+.answer-form textarea:focus {
+  outline: none;
+  border-color: #ff3b30;
+  background: #0a0a0a;
+}
+
+.answer-form textarea:disabled {
+  background: #0a0a0a;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* 답변 폼 액션 버튼 */
+.answer-form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: flex-end;
+  align-items: stretch;
+}
+
+.answer-form-actions .answer-submit-btn,
+.answer-form-actions .answer-cancel-btn {
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 0;
+  font-family: "Pretendard", sans-serif;
+  border: 2px solid;
+  box-sizing: border-box;
+  padding: 14px 32px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.answer-form-actions .answer-submit-btn {
+  background: transparent;
+  border-color: #ff3b30;
+  color: #ff3b30;
+}
+
+.answer-form-actions .answer-submit-btn:hover:not(:disabled) {
+  background: #ff3b30;
+  color: #000000;
+}
+
+.answer-form-actions .answer-submit-btn:disabled {
+  background: transparent;
+  border-color: #666;
+  color: #666;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.answer-form-actions .answer-cancel-btn {
+  background: transparent;
+  border-color: #666;
+  color: #666;
+  white-space: nowrap;
+}
+
+.answer-form-actions .answer-cancel-btn:hover:not(:disabled) {
+  background: #666;
+  color: #ffffff;
+}
+
+.answer-form-actions .answer-cancel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 답변 표시 */
+.answer-display {
+  background: #111111;
+  padding: 30px;
+  border: 2px solid #333;
+  border-left: 4px solid #ff3b30;
+  border-radius: 0;
+}
+
+.answer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px dashed #333;
+}
+
+.answer-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+  color: #ff3b30;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.answer-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.answer-author {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.answer-date {
+  font-size: 12px;
+  color: #888;
+  font-weight: 600;
+}
+
+.answer-content {
+  margin: 20px 0;
+}
+
+.answer-content p {
+  margin: 0;
+  line-height: 1.8;
+  color: #cccccc;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* 답변 액션 버튼 */
+.answer-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px dashed #333;
+  justify-content: flex-end;
+}
+
+.edit-answer-btn,
+.delete-answer-btn {
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 0;
+  font-family: "Pretendard", sans-serif;
+  border: 2px solid;
+}
+
+.edit-answer-btn {
+  background: transparent;
+  border-color: #ff3b30;
+  color: #ff3b30;
+}
+
+.edit-answer-btn:hover:not(:disabled) {
+  background: #ff3b30;
+  color: #000000;
+}
+
+.delete-answer-btn {
+  background: transparent;
+  border-color: #666;
+  color: #666;
+}
+
+.delete-answer-btn:hover:not(:disabled) {
+  background: #666;
+  color: #ffffff;
+}
+
+.edit-answer-btn:disabled,
+.delete-answer-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .answer-form {
+    padding: 20px;
+  }
+
+  .answer-form textarea {
+    min-height: 150px;
+    font-size: 14px;
+  }
+
+  .answer-form-actions {
+    flex-direction: column;
+  }
+
+  .answer-form-actions button {
+    width: 100%;
+  }
+
+  .answer-display {
+    padding: 20px;
+  }
+
+  .answer-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .answer-meta {
+    align-items: flex-start;
+  }
+
+  .answer-actions {
+    flex-direction: column;
+  }
+
+  .edit-answer-btn,
+  .delete-answer-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .answer-form,
+  .answer-display {
+    padding: 15px;
+  }
+
+  .answer-form h3,
+  .answer-header h3 {
+    font-size: 16px;
+  }
+
+  .answer-form textarea {
+    font-size: 13px;
+  }
+}

@@ -1,0 +1,78 @@
+.footer {
+  display: flex;
+  justify-content: space-between;
+  border-top: 2px solid #ff3b30;
+}
+
+.footer-container {
+  background-color: #000000;
+  color: #aaaaaa;
+  padding: 30px 50px;
+  font-family: "Pretendard", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.footer-container2 {
+  margin-right: 50px;
+  background-color: #000000;
+  color: #aaaaaa;
+  padding: 30px 50px;
+  font-family: "Pretendard", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.footer-info {
+  margin-bottom: 20px;
+}
+
+.footer-info div {
+  margin: 5px 0;
+}
+
+.footer-logo {
+  height: 90px;
+  opacity: 0.8;
+  transition: all 0.3s;
+  filter: grayscale(100%);
+}
+
+.footer-logo:hover {
+  opacity: 1;
+  filter: none;
+  transform: scale(1.05);
+  filter: drop-shadow(0 0 5px #ff3b30);
+}
+
+.footer-copyright {
+  margin-top: 15px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #aaaaaa;
+  letter-spacing: 1px;
+}
+
+/* === 반응형 스타일 === */
+@media (max-width: 768px) {
+  .footer-container {
+    padding: 20px 20px;
+    font-size: 12px;
+  }
+
+  .footer-logo {
+    height: 30px;
+  }
+
+  .footer-copyright {
+    font-size: 10px;
+  }
+}

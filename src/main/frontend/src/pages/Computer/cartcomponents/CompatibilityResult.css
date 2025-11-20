@@ -1,0 +1,437 @@
+.compatibility-result {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #0d1117;
+  min-height: 100vh;
+  color: #f0f6fc;
+}
+
+.compatibility-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 3rem;
+  text-align: center;
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+  letter-spacing: 2px;
+  font-family: "Courier New", monospace;
+}
+
+.diagram-container {
+  background: linear-gradient(145deg, #161b22, #0d1117);
+  border-radius: 1.5rem;
+  padding: 3rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.1);
+  border: 1px solid #30363d;
+}
+
+.diagram-layout {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* 부품 박스 */
+.component-box {
+  background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+  border-radius: 1rem;
+  padding: 1rem;
+  text-align: center;
+  border: 2px solid #30363d;
+  width: 120px;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.component-box:hover {
+  border-color: #ff0000;
+  box-shadow: 0 0 25px rgba(255, 0, 0, 0.4);
+  transform: translateY(-3px);
+}
+
+.component-icon {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto;
+  margin-bottom: 0.75rem;
+  filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.3));
+}
+
+.component-icon img {
+  max-width: 100%;
+  max-height: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.component-label {
+  font-weight: 200;
+  color: #f0f6fc;
+  font-size: 0.8rem;
+  font-family: "Courier New", monospace;
+  margin-top: 10px;
+  letter-spacing: 1px;
+}
+
+/* 상단 행 (CPU-메모리, 케이스-파워) */
+.top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* 중간 행 (화살표들) */
+.middle-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding: 0 10px;
+}
+
+/* 메인보드 행 */
+.mainboard-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+/* 하단 행 (그래픽카드) */
+.bottom-row {
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 0px;
+}
+
+/* 가로 연결 */
+.horizontal-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.horizontal-link-reverse {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: absolute;
+  right: 22px;
+}
+
+.horizontal-link-reverse .arrow-icon {
+  margin-right: 200px;
+}
+
+/* 세로 연결 */
+.left-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  width: 130px;
+  margin-left: 15px;
+}
+
+.left-vertical .arrow-icon {
+  margin-left: 25px;
+}
+
+.right-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  width: 130px;
+}
+
+.right-vertical .arrow-icon {
+  margin-left: 40px;
+  margin-top: 50px;
+}
+
+.arrow-icon {
+  font-size: 2rem;
+  color: #ff0000;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  animation: pulse-icon 2s infinite;
+}
+
+@keyframes pulse-icon {
+  0%,
+  100% {
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+  }
+}
+
+/* 상태 뱃지 */
+.status-badge {
+  padding: 0.5rem 1.2rem;
+  border-radius: 2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: #0d1117;
+  font-family: "Courier New", monospace;
+  letter-spacing: 1px;
+  border: 2px solid;
+  box-shadow: 0 0 15px;
+  transition: all 0.3s ease;
+}
+
+.status-success {
+  background: #00ff00;
+  border-color: #00ff00;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+.status-error {
+  background: #ff0000;
+  border-color: #ff0000;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+  color: #fff;
+}
+
+.status-warning {
+  background: #ffaa00;
+  border-color: #ffaa00;
+  box-shadow: 0 0 15px rgba(255, 170, 0, 0.5);
+}
+
+.status-unknown {
+  background: #666;
+  border-color: #666;
+  box-shadow: 0 0 15px rgba(102, 102, 102, 0.5);
+  color: #fff;
+}
+
+/* 빈 공간 */
+.spacer {
+  width: 10px;
+}
+
+.empty-space {
+  width: 10px;
+}
+
+/* 상세 정보 섹션 */
+.detail-section {
+  background: linear-gradient(145deg, #161b22, #0d1117);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.1);
+  border: 1px solid #30363d;
+}
+
+.result-divider {
+  border: 0;
+  height: 1px;
+  background: #ddd;
+  margin: 16px 0;
+}
+
+.detail-section hr {
+  display: none !important;
+}
+
+.detail-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  color: #ff0000;
+  font-family: "Courier New", monospace;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+.detail-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: #1a1a1a;
+  border-radius: 0.5rem;
+  border-left: 3px solid #30363d;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  min-height: 50px;
+}
+
+.detail-item:hover {
+  background: #222;
+  border-left-color: #ff0000;
+  transform: translateX(8px);
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+}
+
+.detail-item.status-success {
+  border-left-color: #00ff00;
+}
+
+.detail-item.status-success:hover {
+  border-left-color: #00ff00;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+}
+
+.detail-item.status-error {
+  border-left-color: #ff0000;
+}
+
+.detail-item.status-error:hover {
+  border-left-color: #ff0000;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+}
+
+.detail-item.status-warning {
+  border-left-color: #ffaa00;
+}
+
+.detail-item.status-warning:hover {
+  border-left-color: #ffaa00;
+  box-shadow: 0 0 20px rgba(255, 170, 0, 0.2);
+}
+
+.status-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.detail-item.status-success .status-icon {
+  color: #00ff00;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.detail-item.status-error .status-icon {
+  color: #ff0000;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+.detail-item.status-warning .status-icon {
+  color: #ffaa00;
+  text-shadow: 0 0 10px rgba(255, 170, 0, 0.5);
+}
+
+.detail-item.status-unknown .status-icon {
+  color: #666;
+}
+
+.compatibility-content-box {
+  flex: 1;
+  height: auto !important;
+  border-bottom: none;
+  text-align: left;
+}
+
+.compatibility-question {
+  font-weight: 600;
+  color: #f0f6fc;
+  margin-bottom: 0.5rem;
+  font-family: "Courier New", monospace;
+  letter-spacing: 1px;
+  width: 100%;
+}
+
+.compatibility-answer {
+  color: #8b949e;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  font-family: "Courier New", monospace;
+  overflow: visible;
+  width: 100%;
+}
+
+/* 버튼 */
+.back-button-container {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.back-button {
+  background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+  color: #ffffff;
+  padding: 0.875rem 2rem;
+  border-radius: 0.75rem;
+  border: 2px solid #ffffff;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  font-family: "Courier New", monospace;
+  letter-spacing: 2px;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  background: #222222;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
+}
+
+.back-button:active {
+  transform: translateY(0);
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .compatibility-result {
+    padding: 1rem;
+  }
+
+  .diagram-container {
+    padding: 1.5rem;
+  }
+
+  .component-box {
+    width: 100px;
+    padding: 0.75rem;
+  }
+
+  .component-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .component-label {
+    font-size: 0.85rem;
+  }
+
+  .top-row {
+    gap: 0.5rem;
+  }
+
+  .middle-row {
+    padding: 0 10px;
+  }
+
+  .bottom-row {
+    padding-left: 10px;
+  }
+
+  .left-vertical,
+  .right-vertical {
+    width: 100px;
+  }
+
+  .status-badge {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .arrow-icon {
+    font-size: 1.5rem;
+  }
+}

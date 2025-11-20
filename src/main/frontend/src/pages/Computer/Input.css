@@ -1,0 +1,427 @@
+/* ========================================
+    기계적 산업 스타일 - 상품 등록 폼 (CPU)
+    [모노크롬 & 비비드 레드 테마 적용]
+    ======================================== */
+
+/* === 페이지 컨테이너 === */
+.cpu-page-container {
+  display: flex;
+  min-height: 100vh;
+  /* ⭐️ 수정: 가로 콘텐츠가 넘치면 스크롤 가능하도록 설정 */
+  overflow-x: auto;
+  /* ⭐️ 추가: 사이드바 + 메인 콘텐츠의 최소 너비를 보장하여 스크롤 발생 유도 */
+  min-width: 700px;
+  /* 배경을 검은색, 그리드 패턴으로 변경 */
+  background: #000000;
+  background-image: repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.02) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(255, 255, 255, 0.02) 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(100, 100, 100, 0.02) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(100, 100, 100, 0.02) 3px
+    );
+}
+
+/* === 메인 콘텐츠 === */
+.input-cpu-content {
+  flex: 1;
+  /* ⭐️ 수정: min-width를 0으로 설정하여 남은 공간을 모두 사용하게 함 */
+  min-width: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 60px;
+}
+
+/* === 폼 컨테이너 === */
+.cpu-spec-form {
+  background: rgba(10, 10, 10, 0.95);
+  border-radius: 0;
+  padding: 48px;
+  border: 2px solid #ffffff;
+}
+
+/* === 스펙 그룹 === */
+.spec-group {
+  margin-bottom: 60px;
+}
+
+.spec-group h3 {
+  font-size: 22px;
+  font-weight: 900;
+  margin-bottom: 24px;
+  color: #ff3b30;
+  letter-spacing: 2px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #ff3b30;
+  text-transform: uppercase;
+  font-family: "Pretendard", sans-serif;
+}
+
+.spec-group h4 {
+  font-size: 11px;
+  font-weight: 900;
+  margin-bottom: 16px;
+  color: #888;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: "Pretendard", sans-serif;
+}
+
+/* === 스펙 테이블 === */
+.spec-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+  table-layout: fixed;
+}
+
+.spec-table tbody tr {
+  border-bottom: 1px dashed rgba(100, 100, 100, 0.4);
+  transition: background 0.3s;
+}
+
+.spec-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.label-cell {
+  width: 250px;
+  padding: 20px 20px 20px 0;
+  font-size: 12px;
+  font-weight: 800;
+  color: #bbb;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  vertical-align: middle;
+  font-family: "Pretendard", sans-serif;
+}
+
+.input-cell {
+  padding: 20px 16px;
+  vertical-align: middle;
+}
+
+.action-cell {
+  width: 120px;
+  padding: 20px 0 20px 16px;
+  text-align: right;
+  vertical-align: middle;
+}
+
+/* === 입력 필드 === */
+.spec-input,
+.spec-select {
+  width: 100%;
+  padding: 14px 0;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid #555;
+  font-size: 16px;
+  color: #ffffff;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  font-weight: 500;
+  font-family: "Pretendard", sans-serif;
+}
+
+.spec-input:focus,
+.spec-select:focus {
+  border-bottom-color: #ff3b30;
+  box-shadow: 0 2px 0 0 #ff3b30;
+}
+
+.spec-input:disabled,
+.spec-select:disabled {
+  color: #666;
+  cursor: not-allowed;
+  border-bottom-color: #333;
+}
+
+.spec-input::placeholder {
+  color: #555;
+}
+
+.spec-select {
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0 center;
+  background-size: 20px;
+  padding-right: 30px;
+}
+
+.spec-select option {
+  padding: 8px;
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+/* === 필드 추가 섹션 === */
+.add-field-section {
+  padding: 40px;
+  background: rgba(20, 20, 20, 0.9);
+  border: 2px solid #333;
+  margin-top: 30px;
+}
+
+.add-field-inputs {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.field-key-input,
+.field-value-input {
+  flex: 1;
+  padding: 14px 16px;
+  background: rgba(30, 30, 30, 0.9);
+  border: 1px solid #555;
+  font-size: 15px;
+  color: #ffffff;
+  outline: none;
+  transition: all 0.3s;
+  border-radius: 0;
+  font-family: "Pretendard", sans-serif;
+}
+
+.field-key-input:focus,
+.field-value-input:focus {
+  border-color: #ff3b30;
+  box-shadow: 0 0 10px rgba(255, 59, 48, 0.5);
+}
+
+.field-key-input::placeholder,
+.field-value-input::placeholder {
+  color: #666;
+}
+
+.hint-text {
+  font-size: 11px;
+  color: #888;
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  font-family: "Pretendard", sans-serif;
+}
+
+/* === 버튼 스타일 === */
+.add-field-btn {
+  padding: 14px 28px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.3s;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-radius: 0;
+  font-family: "Pretendard", sans-serif;
+}
+
+.add-field-btn:hover {
+  background: #ff3b30;
+  color: #000;
+  border-color: #ff3b30;
+  box-shadow: 0 0 15px rgba(255, 59, 48, 0.5);
+}
+
+.add-field-btn:disabled {
+  background: rgba(50, 50, 50, 0.5);
+  color: #666;
+  border-color: #444;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.remove-btn {
+  padding: 8px 16px;
+  background: transparent;
+  color: #ff3b30;
+  border: 1px solid #ff3b30;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 0;
+  font-family: "Pretendard", sans-serif;
+}
+
+.remove-btn:hover {
+  background: #ff3b30;
+  color: #000;
+  border-color: #ff3b30;
+}
+
+.remove-btn:disabled {
+  background: rgba(50, 50, 50, 0.5);
+  color: #666;
+  border-color: #444;
+  cursor: not-allowed;
+}
+
+/* === 제출 버튼 === */
+.submit-btn {
+  width: 100%;
+  margin-top: 60px;
+  padding: 22px;
+  background: #ffffff;
+  color: #000000;
+  border: 3px solid #ffffff;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.4s;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  border-radius: 0;
+  font-family: "Pretendard", sans-serif;
+}
+
+.submit-btn:hover {
+  background: #ff3b30;
+  color: #000000;
+  border-color: #ff3b30;
+  letter-spacing: 5px;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(255, 59, 48, 0.5);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+.submit-btn:disabled {
+  background: #333;
+  color: #666;
+  border-color: #555;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  letter-spacing: 4px;
+}
+
+/* === 반응형 === */
+
+/* 1024px 이하에서는 메인 콘텐츠 패딩만 줄여줍니다. */
+@media (max-width: 1024px) {
+  .input-cpu-content {
+    padding: 60px 40px;
+  }
+}
+
+/* ⭐️ 1000px 이하에서는 max-width를 없애고 패딩을 더 줄여 유연성을 확보합니다. */
+@media (max-width: 1000px) {
+  .input-cpu-content {
+    max-width: 100%;
+    padding: 60px 30px;
+  }
+}
+
+/* 768px 이하에서는 세로 레이아웃(컬럼)으로 전환합니다. */
+@media (max-width: 768px) {
+  .cpu-page-container {
+    flex-direction: column;
+    /* ⭐️ min-width를 제거하고 수평 스크롤을 숨겨 모바일 뷰에 맞춥니다. */
+    min-width: unset;
+    overflow-x: hidden;
+  }
+
+  .input-cpu-content {
+    padding: 40px 20px;
+    width: 100%;
+    max-width: 100%; /* max-width를 100%로 확실히 설정 */
+  }
+
+  .cpu-spec-form {
+    padding: 32px 24px;
+  }
+
+  .spec-group {
+    margin-bottom: 32px;
+  }
+
+  /* 테이블 모바일 레이아웃 조정 */
+  .spec-table tbody tr {
+    display: flex;
+    flex-direction: column;
+    padding: 15px 0;
+    border-bottom: 1px solid #444;
+  }
+
+  .label-cell,
+  .input-cell,
+  .action-cell {
+    width: 100%;
+    padding: 6px 0;
+  }
+
+  .label-cell {
+    font-size: 11px;
+    color: #ff3b30;
+  }
+
+  .input-cell {
+    padding-top: 12px;
+  }
+
+  .action-cell {
+    text-align: left;
+    margin-top: 12px;
+  }
+
+  .remove-btn {
+    padding: 10px 20px;
+  }
+
+  .add-field-inputs {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .field-key-input,
+  .field-value-input,
+  .add-field-btn {
+    width: 100%;
+  }
+
+  .field-key-input,
+  .field-value-input {
+    margin-bottom: 12px;
+  }
+
+  .submit-btn {
+    padding: 20px;
+    font-size: 13px;
+    letter-spacing: 3px;
+  }
+}
+
+@media (max-width: 480px) {
+  .input-cpu-content {
+    padding: 30px 16px;
+  }
+
+  .cpu-spec-form {
+    padding: 24px 16px;
+  }
+
+  .add-field-section {
+    padding: 20px 16px;
+  }
+}

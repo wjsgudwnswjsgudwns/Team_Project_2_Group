@@ -1,0 +1,946 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css");
+
+/* ========================================
+   기계적 산업 스타일 - AI 컨설팅 폼
+   [모노크롬 & 비비드 레드 테마 적용]
+   ======================================== */
+
+@keyframes neonPulse {
+  0%,
+  100% {
+    text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 30px #ffffff;
+  }
+  50% {
+    text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 15px #ffffff;
+  }
+}
+
+@keyframes borderGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 5px #ff3b30, 0 0 10px #ff3b30, inset 0 0 5px #ff3b30;
+  }
+  50% {
+    box-shadow: 0 0 10px #ff3b30, 0 0 20px #ff3b30, inset 0 0 10px #ff3b30;
+  }
+}
+
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes buttonShine {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+/* === 폼 컨테이너 === */
+.ai-consult-form-grid {
+  min-height: 100vh;
+  background: #000000;
+  background-image: repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.02) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(255, 255, 255, 0.02) 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(100, 100, 100, 0.02) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(100, 100, 100, 0.02) 3px
+    );
+  padding: 80px 20px;
+  position: relative;
+}
+
+.ai-consult-form-grid::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 400px;
+  background: radial-gradient(
+    ellipse at top,
+    rgba(255, 255, 255, 0.08),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* === 폼 그리드 === */
+.form-grid-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: rgba(10, 10, 10, 0.95);
+  border: 2px solid #ffffff;
+  padding: 48px;
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 32px;
+  position: relative;
+}
+
+.form-grid-container::before,
+.form-grid-container::after {
+  content: "";
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 3px solid #ff3b30;
+}
+
+.form-grid-container::before {
+  top: -2px;
+  left: -2px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.form-grid-container::after {
+  bottom: -2px;
+  right: -2px;
+  border-left: none;
+  border-top: none;
+}
+
+/* === 폼 아이템 === */
+.form-item {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: all 0.3s;
+  padding: 20px;
+  border: 2px solid rgba(100, 100, 100, 0.4);
+  background: rgba(20, 20, 20, 0.5);
+  position: relative;
+}
+
+.form-item::before {
+  content: ">";
+  position: absolute;
+  left: -25px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 24px;
+  animation: blink 1.5s infinite;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.form-item:hover {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  transform: translateX(8px);
+}
+
+.form-item.active {
+  border-color: #ff3b30;
+  background: rgba(255, 59, 48, 0.03);
+  box-shadow: 0 0 25px rgba(255, 59, 48, 0.3);
+  animation: borderGlow 2s infinite;
+}
+
+.input-label {
+  font-size: 11px;
+  font-weight: 900;
+  color: #888;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.selected-value {
+  font-size: 16px;
+  color: #aaaaaa;
+  font-weight: 600;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* === 드롭다운 패널 === */
+.dropdown-wrapper {
+  position: absolute;
+  background: rgba(15, 15, 15, 0.98);
+  border: 2px solid #ffffff;
+  padding: 24px;
+  z-index: 1000;
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.5);
+}
+
+.close-panel-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(100, 100, 100, 0.2);
+  border: 2px solid #666;
+  color: #999;
+  width: 32px;
+  height: 32px;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 900;
+}
+
+.close-panel-btn:hover {
+  background: rgba(255, 59, 48, 0.2);
+  color: #ff3b30;
+  border-color: #ff3b30;
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 0 20px rgba(255, 59, 48, 0.5);
+}
+
+/* === 옵션 패널 === */
+.option-panel {
+  min-width: 280px;
+  max-height: 450px;
+  overflow-y: auto;
+}
+
+.option-item {
+  padding: 16px;
+  border: 1px solid rgba(100, 100, 100, 0.3);
+  background: rgba(20, 20, 20, 0.5);
+  cursor: pointer;
+  transition: all 0.3s;
+  color: #bbb;
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 8px;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  position: relative;
+}
+
+.option-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: transparent;
+  transition: background 0.3s;
+}
+
+.option-item:hover {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ddd;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+  transform: translateX(8px);
+}
+
+.option-item:hover::before {
+  background: linear-gradient(to bottom, #ffffff, #666);
+}
+
+.option-item.selected {
+  color: #ffffff;
+  font-weight: 900;
+  border-color: #ff3b30;
+  background: rgba(255, 59, 48, 0.05);
+  box-shadow: 0 0 20px rgba(255, 59, 48, 0.3);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.option-item.selected::before {
+  background: linear-gradient(to bottom, #ffffff, #ff3b30);
+}
+
+/* === 기타 용도 입력 === */
+.custom-usage-input {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #666;
+}
+
+.custom-usage-input input {
+  width: 100%;
+  padding: 16px;
+  background: rgba(20, 20, 20, 0.8);
+  border: 2px solid #555;
+  font-size: 15px;
+  color: #ccc;
+  outline: none;
+  transition: all 0.3s;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 600;
+}
+
+.custom-usage-input input:focus {
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  border-color: #ffffff;
+  color: #fff;
+}
+
+.custom-usage-input input::placeholder {
+  color: #555;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* === 예산 패널 === */
+.budget-panel {
+  min-width: 450px;
+}
+
+.budget-range-display {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 500;
+  color: #ffffff;
+  margin-bottom: 32px;
+  letter-spacing: 2px;
+  /* animation: neonPulse 3s infinite; */
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.slider-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.slider-controls label {
+  font-size: 11px;
+  color: #888;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* === 슬라이더 + 입력 필드 === */
+.slider-with-input {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.slider-with-input input[type="range"] {
+  flex: 1;
+  height: 4px;
+  background: linear-gradient(to right, #555 0%, #ffffff 50%, #ff3b30 100%);
+  outline: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.slider-with-input input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #ddd;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  transition: all 0.3s;
+}
+
+.slider-with-input input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.3);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.8);
+  background: #fff;
+}
+
+.slider-with-input input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #ddd;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+
+.slider-with-input input[type="range"]::-moz-range-thumb:hover {
+  transform: scale(1.3);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.8);
+  background: #fff;
+}
+
+.budget-number-input {
+  width: 110px;
+  padding: 12px;
+  background: rgba(20, 20, 20, 0.8);
+  border: 2px solid #555;
+  font-size: 16px;
+  color: #ccc;
+  text-align: center;
+  outline: none;
+  transition: all 0.3s;
+  font-weight: 700;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.budget-number-input:focus {
+  background: rgba(255, 59, 48, 0.05);
+  border-color: #ff3b30;
+  color: #fff;
+  box-shadow: 0 0 20px rgba(255, 59, 48, 0.3);
+}
+
+/* === 검색 버튼 === */
+.search-button {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin-top: 40px;
+  padding: 22px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 3px solid #ffffff;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  position: relative;
+  overflow: hidden;
+  /* text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); */
+}
+
+.search-button::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transform: rotate(45deg);
+  /* animation: buttonShine 3s infinite; */
+}
+
+.search-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  transform: scale(1.02);
+  letter-spacing: 6px;
+}
+
+.search-button:disabled {
+  background: rgba(60, 60, 60, 0.2);
+  color: #555;
+  border-color: #444;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  text-shadow: none;
+}
+
+.search-button:disabled::before {
+  display: none;
+}
+
+/* === 로딩 오버레이 === */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 10, 10, 0.98);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loading-content {
+  text-align: center;
+  max-width: 500px;
+  padding: 60px;
+  background: rgba(15, 15, 15, 0.95);
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 50px rgba(255, 255, 255, 0.5);
+  position: relative;
+}
+
+.loading-content::before,
+.loading-content::after {
+  content: "";
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border: 3px solid #ff3b30;
+}
+
+.loading-content::before {
+  top: -3px;
+  left: -3px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.loading-content::after {
+  bottom: -3px;
+  right: -3px;
+  border-left: none;
+  border-top: none;
+}
+
+.loading-spinner {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 32px;
+  border: 5px solid rgba(60, 60, 60, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+}
+
+.loading-text {
+  font-size: 20px;
+  font-weight: 900;
+  color: #ffffff;
+  margin-bottom: 16px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  animation: neonPulse 2s infinite;
+}
+
+.loading-subtext {
+  font-size: 14px;
+  color: #888;
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* === 견적 탭 버튼 === */
+.estimate-tabs {
+  max-width: 1200px;
+  margin: 60px auto 0;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.estimate-tab-btn {
+  flex: 1;
+  min-width: 180px;
+  max-width: 220px;
+  padding: 20px 24px;
+  background: rgba(20, 20, 20, 0.5);
+  border: 2px solid #555;
+  color: #aaaaaa;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.estimate-tab-btn::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(to right, #ffffff, #ff3b30);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s;
+}
+
+.estimate-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #ffffff;
+  color: #ffffff;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  transform: translateY(-4px);
+}
+
+.estimate-tab-btn:hover::before {
+  transform: scaleX(1);
+}
+
+.estimate-tab-btn.active {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
+  color: #ffffff;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.estimate-tab-btn.active::before {
+  transform: scaleX(1);
+}
+
+.tab-subtitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  text-transform: none;
+  letter-spacing: 1px;
+}
+
+.estimate-tab-btn.active .tab-subtitle {
+  color: #ff3b30;
+}
+
+/* === 결과 목록 컨테이너 === */
+.ai-result-list-container {
+  max-width: 1200px;
+  margin: 60px auto 0;
+  background: rgba(10, 10, 10, 0.95);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-result-list-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ffffff, transparent);
+  animation: scanline 3s linear infinite;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* === 결과 헤더 === */
+.product-list-header {
+  display: flex;
+  align-items: center;
+  padding: 24px 32px;
+  background: rgba(20, 20, 20, 0.5);
+  border-bottom: 2px solid #555;
+  font-weight: 900;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 11px;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.product-list-header .col-image {
+  width: 100px;
+  margin-right: 32px;
+}
+
+.product-list-header .col-type {
+  width: 120px;
+}
+
+.product-list-header .col-name {
+  flex: 1;
+}
+
+.product-list-header .col-price {
+  width: 180px;
+  text-align: right;
+}
+
+.product-list-header .col-link {
+  width: 140px;
+  text-align: center;
+}
+
+/* === 결과 아이템 === */
+.product-list-item {
+  display: flex;
+  align-items: center;
+  padding: 32px;
+  border-bottom: 1px solid rgba(100, 100, 100, 0.2);
+  gap: 32px;
+  transition: all 0.3s;
+  position: relative;
+  background: rgba(15, 15, 15, 0.5);
+}
+
+.product-list-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, #ffffff, #666);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.product-list-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: #ffffff;
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+  transform: translateX(8px);
+}
+
+.product-list-item:hover::before {
+  opacity: 1;
+}
+
+.product-list-item:last-child {
+  border-bottom: none;
+}
+
+.product-list-item .col-image {
+  width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-list-item .col-image img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  background: rgba(20, 20, 20, 0.8);
+  border: 2px solid #555;
+  padding: 12px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  filter: grayscale(0.3) contrast(1.1);
+}
+
+.product-list-item .col-type {
+  width: 120px;
+  font-size: 11px;
+  color: #ff3b30;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.product-list-item .col-name {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ccc;
+  line-height: 1.5;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.product-list-item .col-price {
+  width: 180px;
+  text-align: right;
+  font-size: 24px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 1px;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.product-list-item .col-link {
+  width: 140px;
+  text-align: center;
+}
+
+.product-list-item .col-link a {
+  display: inline-block;
+  padding: 14px 32px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 900;
+  font-size: 12px;
+  transition: all 0.3s;
+  border: 2px solid #555;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.product-list-item .col-link a::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.5s, height 0.5s;
+}
+
+.product-list-item .col-link a:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #ffffff;
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+}
+
+.product-list-item .col-link a:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* === 스크롤바 스타일 === */
+.option-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.option-panel::-webkit-scrollbar-track {
+  background: rgba(20, 20, 20, 0.5);
+}
+
+.option-panel::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #ffffff, #666);
+  border-radius: 4px;
+}
+
+.option-panel::-webkit-scrollbar-thumb:hover {
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* === 반응형 === */
+@media (max-width: 1024px) {
+  .form-grid-container {
+    grid-template-columns: 1fr;
+    padding: 40px 32px;
+  }
+
+  .budget-panel {
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .ai-consult-form-grid {
+    padding: 40px 16px;
+  }
+
+  .form-grid-container {
+    padding: 32px 24px;
+  }
+
+  .form-item::before {
+    display: none;
+  }
+
+  .estimate-tabs {
+    gap: 12px;
+  }
+
+  .estimate-tab-btn {
+    min-width: 140px;
+    padding: 16px 20px;
+    font-size: 14px;
+  }
+
+  .tab-subtitle {
+    font-size: 10px;
+  }
+
+  .product-list-header {
+    font-size: 9px;
+    padding: 16px 20px;
+  }
+
+  .product-list-item {
+    flex-wrap: wrap;
+    padding: 24px 20px;
+  }
+
+  .slider-with-input {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .budget-number-input {
+    width: 100%;
+  }
+
+  .search-button {
+    padding: 18px;
+    font-size: 14px;
+    letter-spacing: 2px;
+  }
+
+  .loading-text {
+    font-size: 16px;
+  }
+
+  .budget-range-display {
+    font-size: 28px;
+  }
+}
