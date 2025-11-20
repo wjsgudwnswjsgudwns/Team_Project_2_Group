@@ -192,9 +192,20 @@ public class SecurityConfig {
                                     String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
                                     System.out.println("JWT 생성 완료: " + token.substring(0, 20) + "...");
 
-                                    boolean isNewUser = (user.getPassword() == null);
+                                    // ⬇️ 로그 추가
+                                    try {
+                                        String redirectUrl = "http://team2-free-project-s3-bucket.s3-website.ap-northeast-2.amazonaws.com/oauth2/redirect?token=" + token;
+                                        System.out.println("🔄 리다이렉트 시도: " + redirectUrl);
 
-                                    response.sendRedirect("http://team2-free-project-s3-bucket.s3-website.ap-northeast-2.amazonaws.com/oauth2/redirect?token=" + token);
+                                        response.sendRedirect(redirectUrl);
+
+                                        System.out.println("✅ sendRedirect 성공!");
+                                    } catch (Exception e) {
+                                        System.err.println("❌ 리다이렉트 실패: " + e.getMessage());
+                                        e.printStackTrace();
+                                    }
+                                    // ⬆️ 로그 추가 끝
+
                                     return;
                                 }
 
@@ -258,7 +269,19 @@ public class SecurityConfig {
                                 String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
                                 System.out.println("✅ JWT 생성 완료: " + token.substring(0, 20) + "...");
 
-                                response.sendRedirect("http://team2-free-project-s3-bucket.s3-website.ap-northeast-2.amazonaws.com/oauth2/redirect?token=" + token);
+                                // ⬇️ 로그 추가
+                                try {
+                                    String redirectUrl = "http://team2-free-project-s3-bucket.s3-website.ap-northeast-2.amazonaws.com/oauth2/redirect?token=" + token;
+                                    System.out.println("🔄 리다이렉트 시도: " + redirectUrl);
+
+                                    response.sendRedirect(redirectUrl);
+
+                                    System.out.println("✅ sendRedirect 성공!");
+                                } catch (Exception e) {
+                                    System.err.println("❌ 리다이렉트 실패: " + e.getMessage());
+                                    e.printStackTrace();
+                                }
+                                // ⬆️ 로그 추가 끝
 
                             } catch (Exception e) {
                                 System.err.println("JWT 발급/리다이렉트 중 오류 발생: " + e.getMessage());
