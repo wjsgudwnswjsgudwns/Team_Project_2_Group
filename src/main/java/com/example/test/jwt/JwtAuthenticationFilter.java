@@ -78,7 +78,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 requestURI.startsWith("/api/freeboard") ||
                         requestURI.startsWith("/api/counselboard") ||
                         requestURI.startsWith("/api/infoboard") ||
-                        requestURI.startsWith("/api/help/")
+                        (requestURI.startsWith("/api/help/") && !requestURI.contains("/admin/"))
         )) {
             System.out.println("✅ 게시판 GET 요청 - 필터 건너뜀");
             return true;
