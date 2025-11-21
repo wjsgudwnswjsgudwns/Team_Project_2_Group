@@ -145,8 +145,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/infoboard/**").permitAll()
 
                         // 관리자 전용
-                        .requestMatchers("/api/admin/**").hasRole("ROLE_ADMIN")
-                        .requestMatchers("/api/help/admin/**").hasRole("ROLE_ADMIN")
+                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/help/admin/**").hasAuthority("ROLE_ADMIN")
 
                         // Help - 회원 전용
                         .requestMatchers("/api/help/my").authenticated()
